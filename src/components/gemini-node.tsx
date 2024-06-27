@@ -10,8 +10,8 @@ const customNodeStyle: React.CSSProperties = {
 
 // Define the types for your node data
 interface NodeData {
-  value?: string;
-  onChange?: (value: string) => void;
+    input: any;
+    output: any;
 }
 
 // Define the types for the props the component receives
@@ -21,13 +21,10 @@ interface InputNodeProps {
 }
 
 const GeminiNode: React.FC<InputNodeProps> = ({ data, isConnectable }) => {
-  const [value, setValue] = useState<string>(data.value || '');
+  const [prompt, setPrompt] = useState<string>(data.input["prompt"]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setValue(event.target.value);
-    if (data.onChange) {
-      data.onChange(event.target.value);
-    }
+    setPrompt(event.target.value);
   };
 
   return (
@@ -35,7 +32,7 @@ const GeminiNode: React.FC<InputNodeProps> = ({ data, isConnectable }) => {
       <input
         id="input"
         type="text"
-        value={value}
+        value={prompt}
         onChange={handleChange}
         style={{ width: '100%' }}
         // Optional: Adding 'isConnectable' as a prop to input for potential custom logic
