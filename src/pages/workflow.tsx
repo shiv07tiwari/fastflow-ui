@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -14,6 +14,7 @@ import GeminiNode from '../components/gemini-node';
 import axios from 'axios';
 import TextNode from "../components/text-node";
 import {applyLayout} from "../utils";
+import {useWorkflowStore} from "../store/workflow-store";
 
 const nodeTypes = {
   gemini: GeminiNode,
@@ -30,8 +31,8 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
   const offset = 50;
   const { fitView } = useReactFlow();
 
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const { nodes, edges, setNodes, setEdges, updateNodeInput } = useWorkflowStore();
+
 
   const addNode = useCallback(() => {
     const newNode = {
@@ -39,8 +40,8 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
       type: 'customInput',
       position: { x: Math.random() * 200, y: Math.random() * 200 },
       data: { label: `${nodes.length + 1}` },
-    };
-    setNodes((nds) => [...nds, newNode]);
+    } as Node;
+    setNodes([...nodes, newNode]);
   }, [nodes, setNodes]);
 
   const fetchData = async () => {
@@ -53,7 +54,7 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
       const workflowNodesArray = Object.keys(workflowNodes).map(key => workflowNodes[key]);
 
       for (let i = 0; i < workflowNodesArray.length; i++) {
-        workflowNodesArray[i]["type"] = workflowNodesArray[i]["node"]["id"];
+        workflowNodesArray[i]["type"] = workflowNodesArray[i]["node"];
         workflowNodesArray[i]["data"] = { input: workflowNodesArray[i]["input"], output: workflowNodesArray[i]["output"] };
       }
       // @ts-ignore
@@ -79,17 +80,17 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
   }, []);
 
   const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes],
+    (changes) => setNodes(applyNodeChanges(changes, nodes)),
+    [nodes, setNodes],
   );
   const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges],
+    (changes) => setEdges(applyEdgeChanges(changes, edges)),
+    [edges, setEdges],
   );
 
   const onConnect = useCallback<OnConnect>(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    (params) => setEdges(addEdge(params, edges)),
+    [edges, setEdges]
   );
 
   return (

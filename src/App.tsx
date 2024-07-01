@@ -6,7 +6,10 @@ import Workflow from "./pages/workflow";
 const App: React.FC = () => {
   return (
     <ReactFlowProvider>
-      <Workflow workflowId={'1'} />
+        <div className="d-flex flex-row">
+            <Workflow workflowId={'WF0'} />
+            <div>Output Panel</div>
+        </div>
     </ReactFlowProvider>
   );
 };
