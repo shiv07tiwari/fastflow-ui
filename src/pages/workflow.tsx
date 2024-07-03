@@ -14,7 +14,7 @@ import GeminiNode from '../components/gemini-node';
 import axios from 'axios';
 import TextNode from "../components/text-node";
 import {applyLayout} from "../utils";
-import {useWorkflowStore} from "../store/workflow-store";
+import {NodeData, useWorkflowStore} from "../store/workflow-store";
 import WebScrapperNode from "../components/web_scrapper_node";
 
 const nodeTypes = {
@@ -28,12 +28,9 @@ interface FlowProps {
 }
 
 const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
-  const centerX = window.innerWidth / 2;
-  const centerY = window.innerHeight / 2;
-  const offset = 50;
   const { fitView } = useReactFlow();
 
-  const { nodes, edges, setNodes, setEdges, updateNodeInput } = useWorkflowStore();
+  const { nodes, edges, setNodes, setEdges } = useWorkflowStore();
 
 
   const addNode = useCallback(() => {
@@ -56,12 +53,11 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
       const workflowNodesArray = Object.keys(workflowNodes).map(key => workflowNodes[key]);
 
       for (let i = 0; i < workflowNodesArray.length; i++) {
+        // Need type to render the correct component, need id to fetch the node data inside the component
         workflowNodesArray[i]["type"] = workflowNodesArray[i]["node"];
         workflowNodesArray[i]["data"] = {
-          available_inputs: workflowNodesArray[i]["available_inputs"],
-          output: workflowNodesArray[i]["output"],
-          required_inputs: workflowNodesArray[i]["required_inputs"],
-        };
+          id: workflowNodesArray[i]["id"],
+        } as NodeData;
       }
       // @ts-ignore
       applyLayout(workflowNodesArray, workflowEdges).then(({ nodes: layoutedNodes, edges: layoutedEdges }) => {

@@ -6,26 +6,48 @@ interface WorkflowState {
     edges: any[];
     setNodes: (nodes: Node[]) => void;
     setEdges: (edges: Edge[]) => void;
-    updateNodeInput: (nodeId: string, input: any) => void;
+    updateNodeAvailableInputs: (nodeId: string, key: string, value: any) => void;
+    getNodeById: (nodeId: string) => Node | undefined;  // New getter function=
 }
 
-export const useWorkflowStore = create<WorkflowState>((set) => ({
+export interface NodeData {
+  id: string;
+  available_inputs: any;
+  required_inputs: any;
+  output: any;
+  icon_url: string;
+  name: string;
+  description: string;
+}
+
+export interface NodeInput {
+    data: NodeData;
+}
+
+export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   nodes: [],
   edges: [],
   setNodes: (nodes: Node[]) => set({ nodes }),
-  setEdges: (edges: any[]) => set({ edges }),
-  updateNodeInput: (nodeId: string, input: any) => set((state: any) => ({
-    nodes: state.nodes.map((node: Node) => {
+  setEdges: (edges: Edge[]) => set({ edges }),
+  updateNodeAvailableInputs: (nodeId: string, key: string, value: any) => {
+    set((state) => {
+      const updatedNodes = state.nodes.map((node) => {
         if (node.id === nodeId) {
-            return {
+          return {
             ...node,
-            data: {
-                    ...node.data,
-                    input,
-                },
-            };
+            available_inputs: {
+                ...node.data.available_inputs,
+                [key]: value,
+              },
+          };
         }
         return node;
-    })
-  })),
-}))
+      });
+      return { nodes: updatedNodes };
+    });
+  },
+  getNodeById: (nodeId: string) => {
+    const state = get();
+    return state.nodes.find(node => node.id === nodeId);
+  },
+}));
