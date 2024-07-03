@@ -74,8 +74,9 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
   const executeWorkflow = useCallback(async () => {
     await axios.post(`http://localhost:8000/workflow/run`, {
         id: workflowId,
+        nodes: nodes,
     });
-  }, [workflowId]);
+  }, [workflowId, nodes]);
 
   useEffect(() => {
     fetchData();
