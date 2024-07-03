@@ -15,10 +15,12 @@ import axios from 'axios';
 import TextNode from "../components/text-node";
 import {applyLayout} from "../utils";
 import {useWorkflowStore} from "../store/workflow-store";
+import WebScrapperNode from "../components/web_scrapper_node";
 
 const nodeTypes = {
   gemini: GeminiNode,
   combine_text: TextNode,
+  web_scraper: WebScrapperNode,
 };
 
 interface FlowProps {
@@ -55,7 +57,11 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
 
       for (let i = 0; i < workflowNodesArray.length; i++) {
         workflowNodesArray[i]["type"] = workflowNodesArray[i]["node"];
-        workflowNodesArray[i]["data"] = { input: workflowNodesArray[i]["input"], output: workflowNodesArray[i]["output"] };
+        workflowNodesArray[i]["data"] = {
+          available_inputs: workflowNodesArray[i]["available_inputs"],
+          output: workflowNodesArray[i]["output"],
+          required_inputs: workflowNodesArray[i]["required_inputs"],
+        };
       }
       // @ts-ignore
       applyLayout(workflowNodesArray, workflowEdges).then(({ nodes: layoutedNodes, edges: layoutedEdges }) => {
@@ -77,7 +83,7 @@ const Workflow: React.FC<FlowProps> = ({ workflowId }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [workflowId]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes(applyNodeChanges(changes, nodes)),

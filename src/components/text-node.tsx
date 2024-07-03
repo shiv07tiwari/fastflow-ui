@@ -2,7 +2,8 @@ import React from 'react';
 import {Handle, NodeProps, Position} from 'reactflow';
 
 type NodeData = {
-  input: any;
+  available_inputs: any;
+  required_inputs: any;
   output: any;
 };
 

@@ -10,7 +10,8 @@ const customNodeStyle: React.CSSProperties = {
 
 // Define the types for your node data
 interface NodeData {
-    input: any;
+    available_inputs: any;
+    required_inputs: any;
     output: any;
 }
 
@@ -21,7 +22,7 @@ interface InputNodeProps {
 }
 
 const GeminiNode: React.FC<InputNodeProps> = ({ data, isConnectable }) => {
-  const [prompt, setPrompt] = useState<string>(data.input["prompt"]);
+  const [prompt, setPrompt] = useState<string>(data.available_inputs["prompt"]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setPrompt(event.target.value);
