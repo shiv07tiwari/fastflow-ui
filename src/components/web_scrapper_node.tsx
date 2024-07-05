@@ -14,7 +14,6 @@ const WebScrapperNode: React.FC<NodeInput> = ({ data }) => {
   }
   // @ts-ignore
   const { available_inputs, icon_url, description, output } = node;
-  console.log(available_inputs)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateNodeAvailableInputs(data.id, "url", e.target.value);

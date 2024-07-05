@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, {ChangeEvent} from 'react';
 import { Handle, Position } from 'reactflow';
 import { Card, Form, InputGroup, Row, Col } from "react-bootstrap";
 import { FaRobot, FaKeyboard, FaCode } from "react-icons/fa";
@@ -22,7 +22,8 @@ const GeminiNode: React.FC<NodeInput> = ({ data }) => {
 
   return (
     <Card className="shadow-sm" style={{ width: "320px", borderRadius: "12px", overflow: "hidden" }}>
-      <Handle type="target" position={Position.Top} style={{ background: '#4a90e2', width: '12px', height: '12px' }} />
+      <Handle id="input2" type="target" position={Position.Top} style={{ background: '#4a90e2', width: '12px', height: '12px', left: 6 }} />
+      <Handle id="input1" type="target" position={Position.Top} style={{ background: '#4a90e2', width: '12px', height: '12px' }} />
       <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
         <img src={icon_url} alt="Gemini Icon" className="mr-3" style={{ width: "32px", height: "32px" }} />
         <span className="font-weight-bold fs-5">Gemini AI</span>
