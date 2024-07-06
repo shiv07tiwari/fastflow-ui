@@ -1,52 +1,92 @@
-import {Node, Edge} from "reactflow";
-import ELK from 'elkjs/lib/elk.bundled.js';
+import { Node, Edge } from "reactflow";
+import ELK from "elkjs/lib/elk.bundled.js";
 
 const elk = new ELK();
 
-// Elk has a *huge* amount of options to configure. To see everything you can
-// tweak check out:
-//
-// - https://www.eclipse.org/elk/reference/algorithms.html
-// - https://www.eclipse.org/elk/reference/options.html
 const elkOptions = {
-  'elk.algorithm': 'layered',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-  'elk.spacing.nodeNode': '80',
-  'elk.direction': 'RIGHT',
+  "elk.algorithm": "layered",
+  "elk.layered.spacing.nodeNodeBetweenLayers": "150", // Increased from 100
+  "elk.spacing.nodeNode": "100", // Increased from 80
+  "elk.direction": "RIGHT",
+  "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+  "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
+  "elk.layered.spacing.edgeNodeBetweenLayers": "50", // Added to increase space between edges and nodes
+  "elk.spacing.edgeEdge": "50", // Added to increase space between edges
+  "elk.layered.spacing.baseValue": "50", // Added as a base spacing value
 };
 
-export const applyLayout = (nodes: Node[], edges: any[], options = elkOptions) => {
-  const isHorizontal = options?.['elk.direction'] === 'RIGHT';
+interface LayoutedNode extends Node {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface LayoutedGraph {
+  children?: LayoutedNode[];
+  edges?: Edge[];
+}
+
+export const applyLayout = (nodes: Node[], edges: Edge[], options = elkOptions): Promise<{ nodes: Node[]; edges: Edge[] }> => {
+  const isHorizontal = options["elk.direction"] === "RIGHT";
+
   const graph = {
-    id: 'root',
+    id: "root",
     layoutOptions: options,
     children: nodes.map((node) => ({
       ...node,
-      // Adjust the target and source handle positions based on the layout
-      // direction.
-      targetPosition: isHorizontal ? 'left' : 'top',
-      sourcePosition: isHorizontal ? 'right' : 'bottom',
-
-      // Hardcode a width and height for elk to use when layouting.
-      width: 150,
-      height: 50,
+      targetPosition: isHorizontal ? "left" : "top",
+      sourcePosition: isHorizontal ? "right" : "bottom",
+      width: 180, // Increased from 150
+      height: 60, // Increased from 50
     })),
-    edges: edges,
+    edges,
   };
 
-  // @ts-ignore
-  // @ts-ignore
   return elk
+      // @ts-ignore
     .layout(graph)
-    .then((layoutedGraph) => ({
-      nodes: layoutedGraph.children?.map((node) => ({
-        ...node,
-        // React Flow expects a position property on the node instead of `x`
-        // and `y` fields.
-        position: { x: node?.x, y: node?.y },
-      })),
+      // @ts-ignore
+    .then((layoutedGraph: LayoutedGraph) => {
+      if (!layoutedGraph.children) {
+        return { nodes, edges };
+      }
 
-      edges: layoutedGraph.edges,
-    }))
-    .catch(console.error);
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+
+      layoutedGraph.children.forEach((node) => {
+        minX = Math.min(minX, node.x);
+        minY = Math.min(minY, node.y);
+        maxX = Math.max(maxX, node.x + node.width);
+        maxY = Math.max(maxY, node.y + node.height);
+      });
+
+      const graphWidth = maxX - minX;
+      const graphHeight = maxY - minY;
+
+      const container = document.querySelector(".react-flow__renderer");
+      const containerWidth = container ? container.clientWidth : window.innerWidth;
+      const containerHeight = container ? container.clientHeight : window.innerHeight;
+
+      const translateX = (containerWidth - graphWidth) / 2 - minX;
+      const translateY = (containerHeight - graphHeight) / 2 - minY;
+
+      return {
+        nodes: layoutedGraph.children.map((node) => ({
+          ...node,
+          position: {
+            x: node.x + translateX,
+            y: node.y + translateY,
+          },
+        })),
+        edges: layoutedGraph.edges || edges,
+      };
+    })
+    .catch((error: Error) => {
+      console.error("Layout calculation error:", error);
+      return { nodes, edges };
+    });
 };

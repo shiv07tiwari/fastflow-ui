@@ -14,7 +14,7 @@ const GeminiNode: React.FC<NodeInput> = ({ data }) => {
   }
 
   // @ts-ignore
-    const { available_inputs, icon_url, description, output } = node;
+  const { available_inputs, icon_url, description, output } = node;
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     updateNodeAvailableInputs(data.id, "prompt", e.target.value);

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import ReactFlow, {
     MiniMap,
     Controls,
@@ -6,8 +6,7 @@ import ReactFlow, {
     BackgroundVariant,
     addEdge,
     Edge,
-    Node,
-    OnConnect, OnNodesChange, applyNodeChanges, OnEdgesChange, applyEdgeChanges, useReactFlow, EdgeChange,
+    OnConnect, applyNodeChanges, OnEdgesChange, applyEdgeChanges, useReactFlow, EdgeChange,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import GeminiNode from '../components/gemini-node';
@@ -16,6 +15,7 @@ import TextNode from "../components/text-node";
 import {applyLayout} from "../utils";
 import {NodeData, useWorkflowStore} from "../store/workflow-store";
 import WebScrapperNode from "../components/web_scrapper_node";
+import AvailableNodes from "./available-nodes";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -29,6 +29,11 @@ interface FlowProps {
 
 const Workflow: React.FC<FlowProps> = ({workflowId}) => {
     const {fitView} = useReactFlow();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
 
     const {
         nodes,
@@ -39,18 +44,6 @@ const Workflow: React.FC<FlowProps> = ({workflowId}) => {
         updateNodeAvailableInputs,
         deleteNodeAvailableInput
     } = useWorkflowStore();
-
-
-    const addNode = useCallback(() => {
-        const newNode = {
-            id: (nodes.length + 1).toString(),
-            type: 'customInput',
-            position: {x: Math.random() * 200, y: Math.random() * 200},
-            data: {label: `${nodes.length + 1}`},
-        } as Node;
-        // @ts-ignore
-        setNodes([...nodes, newNode]);
-    }, [nodes, setNodes]);
 
     const fetchData = async () => {
         try {
@@ -68,8 +61,9 @@ const Workflow: React.FC<FlowProps> = ({workflowId}) => {
                     id: workflowNodesArray[i]["id"],
                 } as NodeData;
             }
-            // @ts-ignore
+
             applyLayout(workflowNodesArray, workflowEdges).then(({nodes: layoutedNodes, edges: layoutedEdges}) => {
+                // @ts-ignore
                 setNodes(layoutedNodes);
                 setEdges(layoutedEdges);
 
@@ -120,7 +114,7 @@ const Workflow: React.FC<FlowProps> = ({workflowId}) => {
         (params) => {
             console.log('onConnect', params);
             if (params.target)
-              updateNodeAvailableInputs(params.target, params.targetHandle || '', '');
+                updateNodeAvailableInputs(params.target, params.targetHandle || '', '');
             setEdges(addEdge(params, edges))
         },
         [edges, setEdges]
@@ -128,18 +122,47 @@ const Workflow: React.FC<FlowProps> = ({workflowId}) => {
 
     return (
         <div style={{width: '100vw', height: '100vh'}}>
-            <button
-                onClick={addNode}
-                style={{position: 'absolute', top: 10, left: 10, zIndex: 4, padding: '8px 12px'}}
-            >
-                Add Node
-            </button>
-            <button
-                onClick={executeWorkflow}
-                style={{position: 'absolute', top: 10, left: 100, zIndex: 4, padding: '8px 12px'}}
-            >
-                Execute Workflow
-            </button>
+            {
+                !isMenuOpen && (
+                    <>
+                        <button
+                            onClick={toggleMenu}
+                            style={{position: 'absolute', top: 10, left: 10, zIndex: 4, padding: '8px 12px'}}
+                        >
+                            {isMenuOpen ? 'Close Menu' : 'Open Menu'}
+                        </button>
+                        <button
+                            onClick={executeWorkflow}
+                            style={{position: 'absolute', top: 10, left: 120, zIndex: 4, padding: '8px 12px'}}
+                        >
+                            Execute Workflow
+                        </button>
+                    </>
+                )
+            }
+
+            {
+                isMenuOpen && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            left: isMenuOpen ? '0' : '-300px',
+                            top: 0,
+                            bottom: 0,
+                            width: '300px',
+                            backgroundColor: 'white',
+                            transition: 'left 0.3s',
+                            zIndex: 5,
+                            overflowY: 'auto',
+                            boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
+                            margin: '24px',
+                            padding: '24px',
+                        }}
+                    >
+                        <AvailableNodes onClose={toggleMenu}/>
+                    </div>
+                )
+            }
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
