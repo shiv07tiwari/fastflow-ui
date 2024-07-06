@@ -1,21 +1,14 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import ReactFlow, {
-    MiniMap,
-    Controls,
-    Background,
-    BackgroundVariant,
-    addEdge,
-    Edge,
-    OnConnect, applyNodeChanges, OnEdgesChange, applyEdgeChanges, useReactFlow, EdgeChange,
-} from 'reactflow';
+import React, { useState } from 'react';
+import ReactFlow, { Controls, Background, BackgroundVariant, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
-import GeminiNode from '../components/gemini-node';
-import axios from 'axios';
+import { useWorkflowData } from "../hooks/useWorkflowData";
+import { useExecuteWorkflow } from "../hooks/useExecuteWorkflow";
+import { useStoreHandlers } from "../hooks/useStoreHandlers";
+import {useWorkflowStore} from "../store/workflow-store";
+import GeminiNode from "../components/gemini-node";
 import TextNode from "../components/text-node";
-import {applyLayout} from "../utils";
-import {NodeData, useWorkflowStore} from "../store/workflow-store";
-import WebScrapperNode from "../components/web_scrapper_node";
 import AvailableNodes from "./available-nodes";
+import WebScrapperNode from "../components/web_scrapper_node";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -23,158 +16,55 @@ const nodeTypes = {
     web_scraper: WebScrapperNode,
 };
 
-interface FlowProps {
-    workflowId: string;
-}
+// @ts-ignore
+const StyledButton = ({ onClick, children }) => (
+  <button
+    onClick={onClick}
+    className="btn btn-primary me-2"
+    style={{
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      borderRadius: '4px',
+      fontWeight: 'bold',
+    }}
+  >
+    {children}
+  </button>
+);
 
-const Workflow: React.FC<FlowProps> = ({workflowId}) => {
-    const {fitView} = useReactFlow();
+// @ts-ignore
+const Workflow = ({ workflowId }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-    };
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-
-    const {
-        nodes,
-        edges,
-        setNodes,
-        setEdges,
-        getEdge,
-        updateNodeAvailableInputs,
-        deleteNodeAvailableInput
-    } = useWorkflowStore();
-
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`http://localhost:8000/workflow/${workflowId}`);
-            const data = response.data;
-            const workflowNodes = data['nodes'];
-            const workflowEdges = data['edges'] as Edge[];
-
-            const workflowNodesArray = Object.keys(workflowNodes).map(key => workflowNodes[key]);
-
-            for (let i = 0; i < workflowNodesArray.length; i++) {
-                // Need type to render the correct component, need id to fetch the node data inside the component
-                workflowNodesArray[i]["type"] = workflowNodesArray[i]["node"];
-                workflowNodesArray[i]["data"] = {
-                    id: workflowNodesArray[i]["id"],
-                } as NodeData;
-            }
-
-            applyLayout(workflowNodesArray, workflowEdges).then(({nodes: layoutedNodes, edges: layoutedEdges}) => {
-                // @ts-ignore
-                setNodes(layoutedNodes);
-                setEdges(layoutedEdges);
-
-                window.requestAnimationFrame(() => fitView());
-            });
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    const executeWorkflow = useCallback(async () => {
-        await axios.post(`http://localhost:8000/workflow/run`, {
-            id: workflowId,
-            nodes: nodes,
-            edges: edges,
-        });
-    }, [workflowId, nodes, edges]);
-
-    useEffect(() => {
-        fetchData();
-    }, [workflowId]);
-
-
-    const onNodesChange = useCallback(
-        // @ts-ignore
-        (changes) => {
-            // @ts-ignore
-            setNodes(applyNodeChanges(changes, nodes))
-        },
-        [nodes, setNodes]
-    );
-    const onEdgesChange: OnEdgesChange = useCallback(
-        (changes: EdgeChange[]) => {
-            // Loop over the changes and update the edges
-            changes.forEach(change => {
-                if (change['type'] === 'remove') {
-                    const removedEdge = getEdge(change['id']);
-                    deleteNodeAvailableInput(removedEdge.target, removedEdge.targetHandle || '');
-                }
-            });
-
-            setEdges(applyEdgeChanges(changes, edges))
-        },
-        [deleteNodeAvailableInput, edges, getEdge, setEdges],
-    );
-
-    const onConnect = useCallback<OnConnect>(
-        (params) => {
-            console.log('onConnect', params);
-            if (params.target)
-                updateNodeAvailableInputs(params.target, params.targetHandle || '', '');
-            setEdges(addEdge(params, edges))
-        },
-        [edges, setEdges]
-    );
+    useWorkflowData(workflowId);
+    const executeWorkflow = useExecuteWorkflow(workflowId);
+    const { onNodesChange, onEdgesChange, onConnect } = useStoreHandlers();
+    const { nodes, edges } = useWorkflowStore();
 
     return (
-        <div style={{width: '100vw', height: '100vh'}}>
-            {
-                !isMenuOpen && (
-                    <>
-                        <button
-                            onClick={toggleMenu}
-                            style={{position: 'absolute', top: 10, left: 10, zIndex: 4, padding: '8px 12px'}}
-                        >
-                            {isMenuOpen ? 'Close Menu' : 'Open Menu'}
-                        </button>
-                        <button
-                            onClick={executeWorkflow}
-                            style={{position: 'absolute', top: 10, left: 120, zIndex: 4, padding: '8px 12px'}}
-                        >
-                            Execute Workflow
-                        </button>
-                    </>
-                )
-            }
-
-            {
-                isMenuOpen && (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            left: isMenuOpen ? '0' : '-300px',
-                            top: 0,
-                            bottom: 0,
-                            width: '300px',
-                            backgroundColor: 'white',
-                            transition: 'left 0.3s',
-                            zIndex: 5,
-                            overflowY: 'auto',
-                            boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
-                            margin: '24px',
-                            padding: '24px',
-                        }}
-                    >
-                        <AvailableNodes onClose={toggleMenu}/>
-                    </div>
-                )
-            }
+        <div style={{ width: '100vw', height: '100vh' }}>
+            {!isMenuOpen && (
+                <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 4 }}>
+                    <StyledButton onClick={toggleMenu}>
+                        {isMenuOpen ? 'Close Menu' : 'Open Menu'}
+                    </StyledButton>
+                    <StyledButton onClick={executeWorkflow}>Execute Workflow</StyledButton>
+                </div>
+            )}
+            {isMenuOpen && <AvailableNodes onClose={toggleMenu} />}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
+                nodeTypes={nodeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                nodeTypes={nodeTypes}
             >
-                <Controls/>
-                <MiniMap/>
-                <Background variant={BackgroundVariant.Cross} gap={12} size={1} color={'red'}/>
+                <Controls />
+                <MiniMap />
+                <Background variant={BackgroundVariant.Cross} gap={12} size={1} color={'red'} />
             </ReactFlow>
+
         </div>
     );
 };
