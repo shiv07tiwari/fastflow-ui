@@ -1,77 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { Spinner, Card } from "react-bootstrap";
+import { Spinner, Card } from 'react-bootstrap';
 
-// Define the structure of individual data items
 interface DataItem {
-    id: string;
-    output: any;  // Define more specific type based on your data structure
+  id: string;
+  output: {
+    response: string;
+  };
 }
 
-// Props type definition
 interface ExecutionResultsProps {
-    onClose: () => void;
-    data: DataItem[] | null;
-    isLoading: boolean;
+  onClose: () => void;
+  data: DataItem[] | null;
+  isLoading: boolean;
 }
 
 const ExecutionResults: React.FC<ExecutionResultsProps> = ({ onClose, data, isLoading }) => {
-    const [expandedIds, setExpandedIds] = useState<string[]>([]);
+  const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
-    // Automatically expand the last item when data changes
-    useEffect(() => {
-        if (data && data.length > 0) {
-            setExpandedIds([data[data.length - 1].id]);
-        }
-    }, [data]);
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setExpandedIds([data[data.length - 1].id]);
+    }
+  }, [data]);
 
-    const handleToggle = (id: string) => {
-        setExpandedIds(prevIds => {
-            if (prevIds.includes(id)) {
-                // If the id is already in the expandedIds array, remove it (collapse card)
-                return prevIds.filter(prevId => prevId !== id);
-            } else {
-                // Add the id to the expandedIds array (expand card)
-                return [...prevIds, id];
-            }
-        });
-    };
-
-    return (
-        <div className="d-flex flex-column h-100" style={{
-            position: 'absolute', right: 0, top: 0, bottom: 0, width: '300px',
-            backgroundColor: 'white', transition: 'right 0.3s', zIndex: 5,
-            overflowY: 'auto', boxShadow: '-2px 0 5px rgba(0,0,0,0.1)', margin: '24px', padding: '24px'
-        }}>
-            <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-                <h5 className="mb-0">Execution Results</h5>
-                <button className="btn-close" onClick={onClose} aria-label="Close"></button>
-            </div>
-            <div className="overflow-auto flex-grow-1">
-                {isLoading ? (
-                    <Spinner animation="border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </Spinner>
-                ) : (
-                    <ul className="list-group list-group-flush">
-                        {data && data.map(item => (
-                            <Card key={item.id} style={{ marginBottom: '10px' }}>
-                                <Card.Header onClick={() => handleToggle(item.id)} style={{ cursor: 'pointer' }}>
-                                    ID: {item.id}
-                                </Card.Header>
-                                {expandedIds.includes(item.id) && (
-                                    <Card.Body>
-                                        <Card.Text>
-                                            Output: {JSON.stringify(item.output["response"])}
-                                        </Card.Text>
-                                    </Card.Body>
-                                )}
-                            </Card>
-                        ))}
-                    </ul>
-                )}
-            </div>
-        </div>
+  const handleToggle = (id: string) => {
+    setExpandedIds(prevIds =>
+      prevIds.includes(id) ? prevIds.filter(prevId => prevId !== id) : [...prevIds, id]
     );
+  };
+
+  const theme = {
+    background: '#FFFFFF',
+    primary: '#FFFFFF',
+    secondary: '#0E6DFC',
+    text: '#000000',
+    headerText: '#FFFFFF',
+    border: '#90CAF9',
+  };
+
+  return (
+    <div
+      className="d-flex flex-column"
+      style={{
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: '300px',
+        backgroundColor: theme.background,
+        transition: 'right 0.3s',
+        zIndex: 5,
+        overflowY: 'auto',
+        boxShadow: `-2px 0 5px ${theme.border}`,
+        margin: '24px',
+        padding: '24px',
+        borderRadius: '8px',
+      }}
+    >
+      <div className="d-flex justify-content-between align-items-center p-3 mb-3" style={{ borderBottom: `1px solid ${theme.border}` }}>
+        <h5 className="mb-0" style={{ color: theme.text }}>Execution Results</h5>
+        <button className="btn-close" onClick={onClose} aria-label="Close"></button>
+      </div>
+      <div className="overflow-auto flex-grow-1">
+        {isLoading ? (
+          <div className="d-flex justify-content-center align-items-center h-100">
+            <Spinner animation="border" role="status" style={{ color: theme.secondary }}>
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <div>
+            {data && data.map(item => (
+              <Card key={item.id} className="mb-3" style={{ backgroundColor: theme.primary, borderColor: theme.border }}>
+                <Card.Header
+                  onClick={() => handleToggle(item.id)}
+                  style={{ cursor: 'pointer', backgroundColor: theme.secondary, color: theme.headerText }}
+                >
+                  <div className="d-flex justify-content-between align-items-center">
+                    <span>ID: {item.id}</span>
+                    <span>{expandedIds.includes(item.id) ? '▼' : '▶'}</span>
+                  </div>
+                </Card.Header>
+                {expandedIds.includes(item.id) && (
+                  <Card.Body style={{ backgroundColor: theme.primary }}>
+                    <Card.Text style={{ whiteSpace: 'pre-wrap', color: theme.text }}>
+                      {JSON.stringify(item.output.response, null, 2)}
+                    </Card.Text>
+                  </Card.Body>
+                )}
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default ExecutionResults;
