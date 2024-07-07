@@ -49,8 +49,6 @@ const Workflow = ({ workflowId }) => {
         executeWorkflow();
     }
 
-    console.log("Final Render Nodes : ", nodes)
-
     return (
         <div style={{ width: '100vw', height: '100vh' }}>
             {!isMenuOpen && (

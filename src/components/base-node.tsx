@@ -31,7 +31,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({data, title, inputLabel, inputIcon, 
 
     return (
         <Card className="shadow-sm" style={{width: "320px", borderRadius: "12px", overflow: "hidden"}}>
-            <Handle type="target" position={Position.Top}
+            <Handle id="input1" type="target" position={Position.Top}
                     style={{background: '#4a90e2', width: '12px', height: '12px'}}/>
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
                 <img src={icon_url} alt={`${title} Icon`} className="mr-3" style={{width: "32px", height: "32px"}}/>

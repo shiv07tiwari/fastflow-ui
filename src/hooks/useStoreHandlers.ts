@@ -49,6 +49,7 @@ export const useReactFlowHandlers = () => {
                 available_inputs: {},
                 required_inputs: [],
                 output: {},
+                node: baseNode.id,
                 data: {
                     id: nodeId,
                 }
@@ -73,6 +74,7 @@ export const useReactFlowHandlers = () => {
 
     const onConnect = useCallback(
         (params: Edge<any> | Connection) => {
+            console.log("Connection Params: ", params)
             // @ts-ignore
             updateNodeAvailableInputs(params.target, params.targetHandle || '');
             setEdges(addEdge(params, edges))

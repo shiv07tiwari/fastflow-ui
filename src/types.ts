@@ -27,4 +27,5 @@ export interface Node extends ReactNode {
     icon_url: string;
     name: string;
     description: string;
+    node: string;
 }
