@@ -1,8 +1,8 @@
-// WebScrapperNode.tsx
 import React from "react";
 import { FaGlobe } from "react-icons/fa";
-import { NodeInput } from "../store/workflow-store";
 import BaseNode from "./base-node";
+import {NodeInput} from "../types";
+
 
 const WebScrapperNode: React.FC<NodeInput> = ({ data }) => {
   return (

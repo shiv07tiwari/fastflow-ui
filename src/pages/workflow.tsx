@@ -3,12 +3,13 @@ import ReactFlow, { Controls, Background, BackgroundVariant, MiniMap } from 'rea
 import 'reactflow/dist/style.css';
 import { useWorkflowData } from "../hooks/useWorkflowData";
 import { useExecuteWorkflow } from "../hooks/useExecuteWorkflow";
-import { useStoreHandlers } from "../hooks/useStoreHandlers";
+import {useReactFlowHandlers} from "../hooks/useStoreHandlers";
 import {useWorkflowStore} from "../store/workflow-store";
 import GeminiNode from "../components/gemini-node";
 import TextNode from "../components/text-node";
 import AvailableNodes from "./available-nodes";
 import WebScrapperNode from "../components/web_scrapper_node";
+import ExecutionResults from "./execution-results";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -34,12 +35,21 @@ const StyledButton = ({ onClick, children }) => (
 // @ts-ignore
 const Workflow = ({ workflowId }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isResultsOpen, setIsResultsOpen] = useState(false);
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const toggleResults = () => setIsResultsOpen(!isResultsOpen);
 
     useWorkflowData(workflowId);
-    const executeWorkflow = useExecuteWorkflow(workflowId);
-    const { onNodesChange, onEdgesChange, onConnect } = useStoreHandlers();
+    const { executeWorkflow, isLoading, data } = useExecuteWorkflow(workflowId);
+    const { onNodesChange, onEdgesChange, onConnect, onAddNode } = useReactFlowHandlers();
     const { nodes, edges } = useWorkflowStore();
+
+    const triggerWorkflow = () => {
+        setIsResultsOpen(true);
+        executeWorkflow();
+    }
+
+    console.log("Final Render Nodes : ", nodes)
 
     return (
         <div style={{ width: '100vw', height: '100vh' }}>
@@ -48,10 +58,15 @@ const Workflow = ({ workflowId }) => {
                     <StyledButton onClick={toggleMenu}>
                         {isMenuOpen ? 'Close Menu' : 'Open Menu'}
                     </StyledButton>
-                    <StyledButton onClick={executeWorkflow}>Execute Workflow</StyledButton>
+                    <StyledButton onClick={triggerWorkflow}>Execute Workflow</StyledButton>
                 </div>
             )}
-            {isMenuOpen && <AvailableNodes onClose={toggleMenu} />}
+            {isMenuOpen && <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode} />}
+            {
+                isResultsOpen && (
+                    <ExecutionResults onClose={toggleResults} data={data} isLoading={isLoading} />
+                )
+            }
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

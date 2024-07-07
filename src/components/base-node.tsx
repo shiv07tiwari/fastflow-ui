@@ -1,26 +1,28 @@
-// BaseNode.tsx
 import React from 'react';
 import {Handle, Position} from 'reactflow';
 import {Card, Form, InputGroup, Row, Col} from "react-bootstrap";
 import {FaCode} from "react-icons/fa";
-import {NodeInput, useWorkflowStore} from "../store/workflow-store";
+import {useWorkflowStore} from "../store/workflow-store";
+import {Node} from "../types";
 
-interface BaseNodeProps extends NodeInput {
+export interface BaseNodeProps {
     title: string;
     inputLabel: string;
     inputIcon: React.ReactNode;
     inputType?: string;
+    data: Node;
 }
 
 const BaseNode: React.FC<BaseNodeProps> = ({data, title, inputLabel, inputIcon, inputType = "text"}) => {
-    const {updateNodeAvailableInputs} = useWorkflowStore();
-    const node = useWorkflowStore().getNodeById(data.id);
+    const {updateNodeAvailableInputs, getNode} = useWorkflowStore();
+    const node = getNode(data.id);
 
     if (!node) {
-        throw new Error(`Node with id ${data.id} not found`);
+        // https://github.com/xyflow/xyflow/issues/2548
+        // React Flow has a bug where after deleting a node, it still tries to render it
+        return null;
     }
 
-    // @ts-ignore
     const {available_inputs, icon_url, description, output} = node;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

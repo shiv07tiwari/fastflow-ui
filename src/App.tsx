@@ -8,7 +8,6 @@ const App: React.FC = () => {
     <ReactFlowProvider>
         <div className="d-flex flex-row">
             <Workflow workflowId={'WF0'} />
-            <div>Output Panel</div>
         </div>
     </ReactFlowProvider>
   );

@@ -1,8 +1,8 @@
-// GeminiNode.tsx
 import React from 'react';
-import { FaRobot, FaKeyboard } from "react-icons/fa";
-import { NodeInput } from "../store/workflow-store";
+import { FaRobot } from "react-icons/fa";
 import BaseNode from "./base-node";
+import {NodeInput} from "../types";
+
 
 const GeminiNode: React.FC<NodeInput> = ({ data }) => {
   return (

@@ -1,24 +1,61 @@
-// hooks/useStoreHandlers.js
-import { useCallback } from "react";
-import { useWorkflowStore } from "../store/workflow-store";
-import { applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, Connection, Edge} from 'reactflow';
+import {useCallback} from "react";
+import {useWorkflowStore} from "../store/workflow-store";
+import {applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, Connection, Edge} from 'reactflow';
+import {BaseNode} from "../types";
 
-export const useStoreHandlers = () => {
+export const useReactFlowHandlers = () => {
     const {
         nodes,
         edges,
         setNodes,
         setEdges,
         getEdge,
+        deleteNode,
+        addNode,
         updateNodeAvailableInputs,
         deleteNodeAvailableInput
     } = useWorkflowStore();
 
 
     const onNodesChange = useCallback(
-        // @ts-ignore
-        (changes: NodeChange[]) => setNodes(applyNodeChanges(changes, nodes)),
-        [nodes, setNodes]
+        (changes: NodeChange[]) => {
+            changes.forEach(change => {
+                if (change.type === 'remove') {
+                    deleteNode(change.id);
+                }
+            });
+            // @ts-ignore
+            setNodes(applyNodeChanges(changes, nodes))
+        },
+        [deleteNode, nodes, setNodes]
+    );
+
+    const onAddNode = useCallback(
+        (baseNode: BaseNode) => {
+            const container = document.querySelector(".react-flow__renderer");
+            const width = container ? container.clientWidth : window.innerWidth;
+            const height = container ? container.clientHeight : window.innerHeight;
+
+            const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
+            const node = {
+                ...baseNode,
+                id: nodeId,
+                type: baseNode.id,
+                position: {
+                    // Specify position - here placing randomly or could place based on some logic
+                    x: width / 2 + Math.random() * 100,
+                    y: height / 2 + Math.random() * 100
+                },
+                available_inputs: {},
+                required_inputs: [],
+                output: {},
+                data: {
+                    id: nodeId,
+                }
+            };
+
+            addNode(node);
+        }, [addNode]
     );
 
     const onEdgesChange = useCallback(
@@ -43,5 +80,5 @@ export const useStoreHandlers = () => {
         [edges, setEdges, updateNodeAvailableInputs]
     );
 
-    return { onNodesChange, onEdgesChange, onConnect };
+    return {onNodesChange, onEdgesChange, onConnect, onAddNode};
 };

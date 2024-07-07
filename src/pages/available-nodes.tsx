@@ -1,26 +1,14 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-
-interface Node {
-    id: string;
-    name: string;
-    icon_url: string;
-    description: string;
-    created_at?: string;
-    updated_at?: string;
-    is_active: boolean;
-    node_type: string;
-    inputs: string[];
-    outputs: string[];
-    workflow_node_type: string;
-}
+import {BaseNode} from "../types";
 
 interface AvailableNodesProps {
     onClose: () => void;
+    onSelectNode: (node: BaseNode) => void;
 }
 
-const AvailableNodes: React.FC<AvailableNodesProps> = ({onClose}) => {
-    const [nodes, setNodes] = useState<Node[]>([]);
+const AvailableNodes: React.FC<AvailableNodesProps> = ({onClose, onSelectNode}) => {
+    const [nodes, setNodes] = useState<BaseNode[]>([]);
 
     useEffect(() => {
         axios.get('http://localhost:8000/nodes')
@@ -54,7 +42,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onClose}) => {
             <div className="overflow-auto flex-grow-1">
                 <ul className="list-group list-group-flush">
                     {nodes.map((node) => (
-                        <li key={node.id} className={`list-group-item ${node.is_active ? '' : 'opacity-50'}`}>
+                        <li onClick={() => onSelectNode(node)} key={node.id} className={`list-group-item ${node.is_active ? '' : 'opacity-50'}`}>
                             <div className="d-flex align-items-center mb-2">
                                 <img src={node.icon_url} alt={node.name} className="me-2"
                                      style={{width: '24px', height: '24px'}}/>
