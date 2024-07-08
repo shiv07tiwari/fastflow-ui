@@ -10,10 +10,20 @@ export interface BaseNodeProps {
     inputIcon: React.ReactNode;
     inputType?: string;
     data: Node;
+    handleInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleFileUpload?: () => void;
 }
 
-const BaseNode: React.FC<BaseNodeProps> = ({data, title, inputLabel, inputIcon, inputType = "text"}) => {
-    const {updateNodeAvailableInputs, getNode} = useWorkflowStore();
+const BaseNode: React.FC<BaseNodeProps> = ({
+                                               data,
+                                               title,
+                                               inputLabel,
+                                               inputIcon,
+                                               inputType = "text",
+                                               handleInputChange,
+                                               handleFileUpload
+                                           }) => {
+    const {getNode} = useWorkflowStore();
     const node = getNode(data.id);
 
     if (!node) {
@@ -22,10 +32,34 @@ const BaseNode: React.FC<BaseNodeProps> = ({data, title, inputLabel, inputIcon, 
         return null;
     }
 
-    const {available_inputs, icon_url, description} = node;
+    const {icon_url} = node;
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateNodeAvailableInputs(data.id, inputType === "text" ? "prompt" : "url", e.target.value);
+    const renderInput = () => {
+        const {available_inputs} = node;
+        if (inputType === 'file') {
+            return (
+                <>
+                    <input type="file" onChange={handleInputChange} className="form-control"/>
+                    <button onClick={(e) => { e.preventDefault(); handleFileUpload?.() }}>
+                        Upload File
+                    </button>
+                </>
+            )
+        } else {
+            return (
+                <InputGroup>
+                    <InputGroup.Text className="bg-white">{inputIcon}</InputGroup.Text>
+                    <Form.Control
+                        as={inputType === "text" ? "textarea" : "input"}
+                        placeholder={inputType === "text" ? "Enter your prompt" : "Enter URL to scrape"}
+                        value={available_inputs[inputType === "text" ? "prompt" : "url"] || ''}
+                        onChange={handleInputChange}
+                        className="border-left-0"
+                        style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
+                    />
+                </InputGroup>
+            );
+        }
     };
 
     return (
@@ -33,27 +67,15 @@ const BaseNode: React.FC<BaseNodeProps> = ({data, title, inputLabel, inputIcon, 
             <Handle id="input1" type="target" position={Position.Top}
                     style={{background: '#4a90e2', width: '12px', height: '12px'}}/>
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
-                <img src={icon_url} alt={`${title} Icon`} className="mr-3" style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
+                <img src={icon_url} alt={`${title} Icon`} className="mr-3"
+                     style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
                 <span className="font-weight-bold fs-5">{title}</span>
             </Card.Header>
             <Card.Body className="bg-light">
-                <Card.Text className="text-muted mb-3">{description}</Card.Text>
                 <Form>
                     <Form.Group className="mb-3">
                         <Form.Label className="text-primary">{inputLabel}</Form.Label>
-                        <InputGroup>
-                            <InputGroup.Text className="bg-white">
-                                {inputIcon}
-                            </InputGroup.Text>
-                            <Form.Control
-                                as={inputType === "text" ? "textarea" : "input"}
-                                placeholder={inputType === "text" ? "Enter your prompt" : "Enter URL to scrape"}
-                                value={available_inputs[inputType === "text" ? "prompt" : "url"] || ''}
-                                onChange={handleInputChange}
-                                className="border-left-0"
-                                style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
-                            />
-                        </InputGroup>
+                        {renderInput()}
                     </Form.Group>
                 </Form>
             </Card.Body>

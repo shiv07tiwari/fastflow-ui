@@ -1,6 +1,8 @@
 import {create} from 'zustand'
 import {Edge} from "reactflow";
 import {BaseNode, Node} from "../types";
+import { devtools } from 'zustand/middleware'
+
 
 interface WorkflowState {
     nodes: Node[];
@@ -18,8 +20,7 @@ interface WorkflowState {
 }
 
 
-export const useWorkflowStore = create<WorkflowState>((set, get) => ({
-    nodes: [],
+export const useWorkflowStore = create(devtools<WorkflowState>((set, get) => ({    nodes: [],
     baseNodes: [],
     edges: [],
     setNodes: (nodes: Node[]) => {
@@ -87,4 +88,6 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
             return {nodes: updatedNodes};
         });
     },
+}) , {
+    name: 'workflow-store'
 }));

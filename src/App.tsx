@@ -1,4 +1,5 @@
 import React from "react";
+import './firebase';
 import {ReactFlowProvider} from "reactflow";
 import Workflow from "./pages/workflow";
 

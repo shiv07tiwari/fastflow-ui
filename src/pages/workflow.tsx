@@ -10,11 +10,13 @@ import TextNode from "../components/text-node";
 import AvailableNodes from "./available-nodes";
 import WebScrapperNode from "../components/web_scrapper_node";
 import ExecutionResults from "./execution-results";
+import FileReaderNode from "../components/file-reader";
 
 const nodeTypes = {
     gemini: GeminiNode,
     combine_text: TextNode,
     web_scraper: WebScrapperNode,
+    file_reader: FileReaderNode,
 };
 
 // @ts-ignore
