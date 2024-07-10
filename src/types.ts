@@ -28,4 +28,5 @@ export interface Node extends ReactNode {
     name: string;
     description: string;
     node: string;
+    input_handles: number;
 }

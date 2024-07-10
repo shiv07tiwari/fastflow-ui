@@ -2,6 +2,8 @@ import {useCallback} from "react";
 import {useWorkflowStore} from "../store/workflow-store";
 import {applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, Connection, Edge} from 'reactflow';
 import {BaseNode} from "../types";
+import {Node} from "../types";
+
 
 export const useReactFlowHandlers = () => {
     const {
@@ -37,23 +39,30 @@ export const useReactFlowHandlers = () => {
             const height = container ? container.clientHeight : window.innerHeight;
 
             const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
+            const innerInput = baseNode.inputs.filter((input) => !input.includes("input"))[0];
+            const handleInputs = baseNode.inputs.filter((input) => input.includes("input"));
+
             const node = {
                 ...baseNode,
                 id: nodeId,
                 type: baseNode.id,
                 position: {
-                    // Specify position - here placing randomly or could place based on some logic
                     x: width / 2 + Math.random() * 100,
                     y: height / 2 + Math.random() * 100
                 },
-                available_inputs: {},
-                required_inputs: [],
+                available_inputs: {
+                    [innerInput]: null,
+                },
+                required_inputs: [innerInput],
                 output: {},
                 node: baseNode.id,
                 data: {
                     id: nodeId,
-                }
-            };
+                },
+                input_handles: handleInputs.length
+            } as Node;
+            // @ts-ignore
+            delete node.inputs; delete node.outputs;
 
             addNode(node);
         }, [addNode]

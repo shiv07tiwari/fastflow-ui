@@ -27,8 +27,8 @@ const FileReaderNode: React.FC<FileReaderNodeProps> = ({data}) => {
         const storageRef = ref(storage, `files/${file.name}`);
         try {
             const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-            updateNodeAvailableInputs(data.id, "file", downloadURL);
+            const downloadURL = snapshot.ref.fullPath;
+            updateNodeAvailableInputs(data.id, "file_path", downloadURL);
         } catch (error) {
             console.error('Upload failed', error);
         }

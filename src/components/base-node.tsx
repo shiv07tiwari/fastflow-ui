@@ -3,6 +3,7 @@ import {Handle, Position} from 'reactflow';
 import {Card, Form, InputGroup} from "react-bootstrap";
 import {useWorkflowStore} from "../store/workflow-store";
 import {Node} from "../types";
+import NodeHandle from "./node-handle";
 
 export interface BaseNodeProps {
     title: string;
@@ -32,7 +33,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         return null;
     }
 
-    const {icon_url} = node;
+    const {icon_url, input_handles } = node;
 
     const renderInput = () => {
         const {available_inputs} = node;
@@ -40,7 +41,10 @@ const BaseNode: React.FC<BaseNodeProps> = ({
             return (
                 <>
                     <input type="file" onChange={handleInputChange} className="form-control"/>
-                    <button onClick={(e) => { e.preventDefault(); handleFileUpload?.() }}>
+                    <button onClick={(e) => {
+                        e.preventDefault();
+                        handleFileUpload?.()
+                    }}>
                         Upload File
                     </button>
                 </>
@@ -64,8 +68,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
     return (
         <Card className="shadow-sm" style={{width: "320px", borderRadius: "12px", overflow: "hidden"}}>
-            <Handle id="input1" type="target" position={Position.Top}
-                    style={{background: '#4a90e2', width: '12px', height: '12px'}}/>
+            <NodeHandle input_handles={input_handles} />
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
                 <img src={icon_url} alt={`${title} Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
