@@ -41,6 +41,7 @@ export const useReactFlowHandlers = () => {
             const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
             const innerInput = baseNode.inputs.filter((input) => !input.includes("input"))[0];
             const handleInputs = baseNode.inputs.filter((input) => input.includes("input"));
+            const totalOutputs = baseNode.outputs.length;
 
             const node = {
                 ...baseNode,
@@ -54,15 +55,16 @@ export const useReactFlowHandlers = () => {
                     [innerInput]: null,
                 },
                 required_inputs: [innerInput],
-                output: {},
                 node: baseNode.id,
                 data: {
                     id: nodeId,
                 },
-                input_handles: handleInputs.length
+                input_handles: handleInputs,
+                output_handles: baseNode.outputs,
+                outputs: {}
             } as Node;
             // @ts-ignore
-            delete node.inputs; delete node.outputs;
+            delete node.inputs;
 
             addNode(node);
         }, [addNode]

@@ -1,23 +1,23 @@
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import {Handle, HandleType, Position} from 'reactflow';
 
-class NodeHandle extends React.Component<{ input_handles: number }> {
+class NodeHandle extends React.Component<{ handles: string[], type: HandleType }> {
     render() {
-        const { input_handles } = this.props;
+        const { handles } = this.props;
         const centerOffset = 10; // Base offset for centering
         const spacing = 60; // Space between each handle in pixels
 
         // Create an array of handles with their respective offsets
-        const handleOffsets = Array.from({length: input_handles}).map((_, index) => {
-            // Calculate offset to distribute handles symmetrically from the center
-            const offsetMultiplier = Math.floor((index + 1) / 2);
-            const directionMultiplier = (index % 2 === 0) ? 1 : -1;
-            const translateX = centerOffset + (offsetMultiplier * spacing * directionMultiplier);
+        const handleOffsets = handles.map((handle, index) => {
             return {
-                id: index, // Original index for sorting purposes
-                translateX
+                translateX: centerOffset + (index - (handles.length - 1) / 2) * spacing,
+                id: handle,
+
             };
         });
+
+        const idPrefix = this.props.type === 'source' ? 'output' : 'input';
+        const type = this.props.type === 'source' ? Position.Bottom : Position.Top;
 
         // Sort the handles by translateX to assign sequential ids from left to right
         handleOffsets.sort((a, b) => a.translateX - b.translateX);
@@ -27,9 +27,9 @@ class NodeHandle extends React.Component<{ input_handles: number }> {
                 {handleOffsets.map((handle, sortedIndex) => (
                     <Handle
                         key={`handle-${sortedIndex}`}
-                        type="target"
-                        position={Position.Top}
-                        id={`input${sortedIndex + 1}`} // Sequential ids from left to right
+                        type={this.props.type}
+                        position={type}
+                        id={handle.id} // Sequential ids from left to right
                         style={{
                             background: '#4a90e2',
                             width: '12px',

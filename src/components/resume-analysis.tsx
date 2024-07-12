@@ -3,13 +3,13 @@ import {BsFillFileEarmarkTextFill} from "react-icons/bs";
 import BaseNode from "./base-node";
 import {Node} from "../types";
 import {useWorkflowStore} from "../store/workflow-store";
-import {getStorage, ref, uploadBytes} from "firebase/storage";
+import {getStorage, ref, uploadBytes, getDownloadURL} from "firebase/storage";
 
 interface FileReaderNodeProps {
     data: Node;
 }
 
-const FileReaderNode: React.FC<FileReaderNodeProps> = ({data}) => {
+const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
     const {updateNodeAvailableInputs} = useWorkflowStore();
     const storage = getStorage();
     const [file, setFile] = useState(null);
@@ -47,4 +47,4 @@ const FileReaderNode: React.FC<FileReaderNodeProps> = ({data}) => {
     );
 };
 
-export default FileReaderNode;
+export default ResumeAnalysisNode;

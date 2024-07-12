@@ -33,7 +33,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         return null;
     }
 
-    const {icon_url, input_handles } = node;
+    const {icon_url, input_handles, output_handles } = node;
 
     const renderInput = () => {
         const {available_inputs} = node;
@@ -68,11 +68,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
     return (
         <Card className="shadow-sm" style={{width: "320px", borderRadius: "12px", overflow: "hidden"}}>
-            <NodeHandle input_handles={input_handles} />
+            <NodeHandle handles={input_handles} type="target" />
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
                 <img src={icon_url} alt={`${title} Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
-                <span className="font-weight-bold fs-5">{title}</span>
+                <span className="font-weight-bold fs-5">{node.name}</span>
             </Card.Header>
             <Card.Body className="bg-light">
                 <Form>
@@ -82,8 +82,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                     </Form.Group>
                 </Form>
             </Card.Body>
-            <Handle type="source" position={Position.Bottom}
-                    style={{background: '#4a90e2', width: '12px', height: '12px'}}/>
+            <NodeHandle handles={output_handles} type="source" />
+
         </Card>
     );
 };

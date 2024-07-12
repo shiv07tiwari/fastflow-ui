@@ -3,9 +3,7 @@ import { Spinner, Card } from 'react-bootstrap';
 
 interface DataItem {
   id: string;
-  output: {
-    response: string;
-  };
+  output: any;
 }
 
 interface ExecutionResultsProps {
@@ -84,6 +82,7 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ onClose, data, isLo
                 {expandedIds.includes(item.id) && (
                   <Card.Body style={{ backgroundColor: theme.primary }}>
                     <Card.Text style={{ whiteSpace: 'pre-wrap', color: theme.text }}>
+                        {/*TODO: Display the response here*/}
                       {JSON.stringify(item.output.response, null, 2)}
                     </Card.Text>
                   </Card.Body>

@@ -23,10 +23,12 @@ export interface Node extends ReactNode {
     id: string;
     available_inputs: any;
     required_inputs: any;
-    output: any;
     icon_url: string;
     name: string;
     description: string;
     node: string;
-    input_handles: number;
+    input_handles: any;
+    output_handles: any;
+
+    outputs: any;
 }
