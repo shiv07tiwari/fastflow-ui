@@ -11,6 +11,7 @@ import AvailableNodes from "./available-nodes";
 import WebScrapperNode from "../components/web_scrapper_node";
 import ExecutionResults from "./execution-results";
 import FileReaderNode from "../components/file-reader";
+import Summarizer from "../components/summarizer";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -18,6 +19,7 @@ const nodeTypes = {
     web_scraper: WebScrapperNode,
     file_reader: FileReaderNode,
     resume_analysis: FileReaderNode,
+    summarizer: Summarizer,
 };
 
 // @ts-ignore
@@ -40,7 +42,6 @@ const Workflow = ({workflowId}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isResultsOpen, setIsResultsOpen] = useState(false);
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const toggleResults = () => setIsResultsOpen(!isResultsOpen);
 
     useWorkflowData(workflowId);
     const {executeWorkflow, isLoading, data} = useExecuteWorkflow(workflowId);
@@ -63,7 +64,12 @@ const Workflow = ({workflowId}) => {
             {isMenuOpen && <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>}
             {
                 isResultsOpen && (
-                    <ExecutionResults onClose={toggleResults} data={data} isLoading={isLoading}/>
+                    <ExecutionResults
+                        show={isResultsOpen}
+                        onHide={() => setIsResultsOpen(false)}
+                        data={data}
+                        isLoading={isLoading}
+                    />
                 )
             }
             <ReactFlow

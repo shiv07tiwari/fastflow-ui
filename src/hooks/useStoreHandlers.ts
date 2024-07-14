@@ -39,9 +39,12 @@ export const useReactFlowHandlers = () => {
             const height = container ? container.clientHeight : window.innerHeight;
 
             const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
-            const innerInput = baseNode.inputs.filter((input) => !input.includes("input"))[0];
+            const innerInput = baseNode.inputs.filter((input) => !input.includes("input"));
+            const inputDictionary = innerInput.reduce((acc, current) => {
+                acc[current] = null;
+                return acc;
+            }, {} as { [key: string]: null });
             const handleInputs = baseNode.inputs.filter((input) => input.includes("input"));
-            const totalOutputs = baseNode.outputs.length;
 
             const node = {
                 ...baseNode,
@@ -51,10 +54,8 @@ export const useReactFlowHandlers = () => {
                     x: width / 2 + Math.random() * 100,
                     y: height / 2 + Math.random() * 100
                 },
-                available_inputs: {
-                    [innerInput]: null,
-                },
-                required_inputs: [innerInput],
+                available_inputs: inputDictionary,
+                required_inputs: innerInput,
                 node: baseNode.id,
                 data: {
                     id: nodeId,
@@ -85,7 +86,6 @@ export const useReactFlowHandlers = () => {
 
     const onConnect = useCallback(
         (params: Edge<any> | Connection) => {
-            console.log("Connection Params: ", params)
             // @ts-ignore
             updateNodeAvailableInputs(params.target, params.targetHandle || '');
             setEdges(addEdge(params, edges))

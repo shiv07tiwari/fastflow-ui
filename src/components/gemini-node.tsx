@@ -9,17 +9,22 @@ const GeminiNode: React.FC<NodeInput> = ({data}) => {
 
     const {updateNodeAvailableInputs} = useWorkflowStore();
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateNodeAvailableInputs(data.id, "prompt", e.target.value);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+        updateNodeAvailableInputs(data.id, key, e.target.value);
     };
 
     return (
         <BaseNode
             data={data}
             title="Gemini AI"
-            inputLabel="Prompt"
-            inputIcon={<FaRobot/>}
-            inputType="text"
+            inputs={[
+                {
+                    key: "prompt",
+                    inputLabel: "Prompt",
+                    inputIcon: <FaRobot/>,
+                    inputType: "text"
+                }
+            ]}
             handleInputChange={handleInputChange}
         />
     );

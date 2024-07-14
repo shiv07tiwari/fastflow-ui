@@ -1,36 +1,33 @@
-import React, {useState} from 'react';
-import {BsFillFileEarmarkTextFill} from "react-icons/bs";
+import React from 'react';
+import { BsFillFileEarmarkTextFill } from "react-icons/bs";
 import BaseNode from "./base-node";
-import {Node} from "../types";
-import {useWorkflowStore} from "../store/workflow-store";
-import {getStorage, ref, uploadBytes} from "firebase/storage";
+import { Node } from "../types";
+import { useWorkflowStore } from "../store/workflow-store";
+import {useFileUpload} from "../hooks/useHandleFileUpload";
 
 interface FileReaderNodeProps {
     data: Node;
 }
 
-const FileReaderNode: React.FC<FileReaderNodeProps> = ({data}) => {
-    const {updateNodeAvailableInputs} = useWorkflowStore();
-    const storage = getStorage();
-    const [file, setFile] = useState(null);
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // @ts-ignore
-        setFile(e.target.files[0]);
+const FileReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
+    const { updateNodeAvailableInputs } = useWorkflowStore();
+
+    const onComplete = (downloadURL: string, status: string) => {
+        if (status === 'successful' && downloadURL) {
+            updateNodeAvailableInputs(data.id, "file_path", downloadURL);
+        }
     };
 
-    const handleFileUpload = async () => {
-        if (!file) {
-            window.alert("Please select a file to upload");
-            return;
-        }
-        // @ts-ignore
-        const storageRef = ref(storage, `files/${file.name}`);
-        try {
-            const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = snapshot.ref.fullPath;
-            updateNodeAvailableInputs(data.id, "file_path", downloadURL);
-        } catch (error) {
-            console.error('Upload failed', error);
+    const { uploadFile, status } = useFileUpload(
+        {onComplete}
+    );
+
+    // Handle the file directly in the input handler
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+        const file = e.target.files?.[0];
+        console.log(file)
+        if (file) {
+            uploadFile(file);
         }
     };
 
@@ -38,11 +35,16 @@ const FileReaderNode: React.FC<FileReaderNodeProps> = ({data}) => {
         <BaseNode
             data={data}
             title="File Reader"
-            inputLabel="Upload File"
-            inputIcon={<BsFillFileEarmarkTextFill/>}
-            inputType="file"
+            inputs={[
+                {
+                    key: "file_path",
+                    inputLabel: "Upload File",
+                    inputIcon: <BsFillFileEarmarkTextFill/>,
+                    inputType: "file"
+                }
+            ]}
             handleInputChange={handleInputChange}
-            handleFileUpload={handleFileUpload}
+            status={status}
         />
     );
 };

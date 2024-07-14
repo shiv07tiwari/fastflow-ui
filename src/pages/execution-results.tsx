@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Spinner, Card } from 'react-bootstrap';
+import { Modal, Button, Card, Accordion, Spinner } from 'react-bootstrap';
 
 interface DataItem {
   id: string;
-  output: any;
+  output: {
+    response: Record<string, any> | string;
+  };
 }
 
 interface ExecutionResultsProps {
-  onClose: () => void;
+  show: boolean;
+  onHide: () => void;
   data: DataItem[] | null;
   isLoading: boolean;
 }
 
-const ExecutionResults: React.FC<ExecutionResultsProps> = ({ onClose, data, isLoading }) => {
+const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data, isLoading }) => {
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
   useEffect(() => {
@@ -27,72 +30,75 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ onClose, data, isLo
     );
   };
 
-  const theme = {
-    background: '#FFFFFF',
-    primary: '#FFFFFF',
-    secondary: '#0E6DFC',
-    text: '#000000',
-    headerText: '#FFFFFF',
-    border: '#90CAF9',
+  const renderResponseItem = (key: string, value: any) => {
+    if (typeof value === 'object' && value !== null) {
+      return (
+        <Accordion key={key}>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>{key}</Accordion.Header>
+            <Accordion.Body>
+              {Object.entries(value).map(([subKey, subValue]) => renderResponseItem(`${key}.${subKey}`, subValue))}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      );
+    }
+    return (
+      <div key={key} className="mb-2">
+        <strong>{key}:</strong> {String(value)}
+      </div>
+    );
+  };
+
+  const renderResponse = (response: Record<string, any> | string) => {
+    if (typeof response === 'string') {
+      return <pre className="mb-0">{response}</pre>;
+    }
+    return Object.entries(response).map(([key, value]) => renderResponseItem(key, value));
   };
 
   return (
-    <div
-      className="d-flex flex-column"
-      style={{
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        bottom: 0,
-        width: '300px',
-        backgroundColor: theme.background,
-        transition: 'right 0.3s',
-        zIndex: 5,
-        overflowY: 'auto',
-        boxShadow: `-2px 0 5px ${theme.border}`,
-        margin: '24px',
-        padding: '24px',
-        borderRadius: '8px',
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center p-3 mb-3" style={{ borderBottom: `1px solid ${theme.border}` }}>
-        <h5 className="mb-0" style={{ color: theme.text }}>Execution Results</h5>
-        <button className="btn-close" onClick={onClose} aria-label="Close"></button>
-      </div>
-      <div className="overflow-auto flex-grow-1">
+    <Modal show={show} onHide={onHide} size="lg" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Execution Results</Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
         {isLoading ? (
-          <div className="d-flex justify-content-center align-items-center h-100">
-            <Spinner animation="border" role="status" style={{ color: theme.secondary }}>
+          <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
+            <Spinner animation="border" role="status">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           </div>
         ) : (
           <div>
             {data && data.map(item => (
-              <Card key={item.id} className="mb-3" style={{ backgroundColor: theme.primary, borderColor: theme.border }}>
+              <Card key={item.id} className="mb-3 shadow-sm">
                 <Card.Header
                   onClick={() => handleToggle(item.id)}
-                  style={{ cursor: 'pointer', backgroundColor: theme.secondary, color: theme.headerText }}
+                  style={{ cursor: 'pointer', backgroundColor: '#f8f9fa' }}
+                  className="d-flex justify-content-between align-items-center"
                 >
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span>ID: {item.id}</span>
-                    <span>{expandedIds.includes(item.id) ? '▼' : '▶'}</span>
-                  </div>
+                  <span className="fw-bold">ID: {item.id}</span>
+                  <Button variant="outline-secondary" size="sm">
+                    {expandedIds.includes(item.id) ? 'Collapse' : 'Expand'}
+                  </Button>
                 </Card.Header>
                 {expandedIds.includes(item.id) && (
-                  <Card.Body style={{ backgroundColor: theme.primary }}>
-                    <Card.Text style={{ whiteSpace: 'pre-wrap', color: theme.text }}>
-                        {/*TODO: Display the response here*/}
-                      {JSON.stringify(item.output.response, null, 2)}
-                    </Card.Text>
+                  <Card.Body>
+                    {renderResponse(item.output.response)}
                   </Card.Body>
                 )}
               </Card>
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

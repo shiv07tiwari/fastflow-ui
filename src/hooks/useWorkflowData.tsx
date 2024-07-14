@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useReactFlow } from "reactflow";
-import {applyLayout} from "../utils";
+import {applyLayout, underscoreToReadable} from "../utils";
 
 export const useWorkflowData = (workflowId: string) => {
     const { setNodes, setEdges } = useReactFlow();
@@ -15,7 +15,8 @@ export const useWorkflowData = (workflowId: string) => {
                 const workflowNodesArray = nodes.map((node: { node: any; id: any; }) => ({
                     ...node,
                     type: node.node,
-                    data: { id: node.id }
+                    data: { id: node.id },
+                    name: underscoreToReadable(node.node),
                 }));
 
                 const formattedEdges = edges.map((edge: { source: any; target: any; }) => ({

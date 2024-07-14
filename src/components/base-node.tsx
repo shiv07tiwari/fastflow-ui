@@ -1,28 +1,31 @@
 import React from 'react';
-import {Handle, Position} from 'reactflow';
-import {Card, Form, InputGroup} from "react-bootstrap";
+import {Card, Form, InputGroup, Spinner} from "react-bootstrap";
 import {useWorkflowStore} from "../store/workflow-store";
 import {Node} from "../types";
 import NodeHandle from "./node-handle";
+import {UploadStatus} from "../hooks/useHandleFileUpload";
 
-export interface BaseNodeProps {
-    title: string;
+interface InputProps {
+    key: string;
     inputLabel: string;
     inputIcon: React.ReactNode;
     inputType?: string;
+}
+
+export interface BaseNodeProps {
+    title: string;
+    inputs: InputProps[];
     data: Node;
-    handleInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleFileUpload?: () => void;
+    handleInputChange: (e: React.ChangeEvent<any>, key: string) => void;
+    status?: UploadStatus;
 }
 
 const BaseNode: React.FC<BaseNodeProps> = ({
                                                data,
                                                title,
-                                               inputLabel,
-                                               inputIcon,
-                                               inputType = "text",
                                                handleInputChange,
-                                               handleFileUpload
+                                               status,
+                                               inputs
                                            }) => {
     const {getNode} = useWorkflowStore();
     const node = getNode(data.id);
@@ -33,20 +36,27 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         return null;
     }
 
-    const {icon_url, input_handles, output_handles } = node;
+    const {icon_url, input_handles, output_handles} = node;
 
-    const renderInput = () => {
+    const renderInput = (input: InputProps) => {
+        const {key, inputIcon, inputType} = input;
         const {available_inputs} = node;
         if (inputType === 'file') {
             return (
                 <>
-                    <input type="file" onChange={handleInputChange} className="form-control"/>
-                    <button onClick={(e) => {
-                        e.preventDefault();
-                        handleFileUpload?.()
-                    }}>
-                        Upload File
-                    </button>
+                    <input type="file" onChange={(e) => {
+                        handleInputChange(e, key);
+                    }} className="form-control"/>
+                    {
+                        status === 'uploading' && (
+                            <Spinner as="span" animation="border" size="sm" className="mt-16"/>
+                        )
+                    }
+                    {
+                        status === 'successful' && (
+                            <span className="text-success mt-32">File uploaded successfully</span>
+                        )
+                    }
                 </>
             )
         } else {
@@ -55,9 +65,9 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                     <InputGroup.Text className="bg-white">{inputIcon}</InputGroup.Text>
                     <Form.Control
                         as={inputType === "text" ? "textarea" : "input"}
-                        placeholder={inputType === "text" ? "Enter your prompt" : "Enter URL to scrape"}
-                        value={available_inputs[inputType === "text" ? "prompt" : "url"] || ''}
-                        onChange={handleInputChange}
+                        placeholder={`Enter your ${key}`}
+                        value={available_inputs[key] || ''}
+                        onChange={(e) => handleInputChange(e, key)}
                         className="border-left-0"
                         style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
                     />
@@ -67,8 +77,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     };
 
     return (
-        <Card className="shadow-sm" style={{width: "320px", borderRadius: "12px", overflow: "hidden"}}>
-            <NodeHandle handles={input_handles} type="target" />
+        <Card className="shadow-sm bg-light" style={{width: "320px", borderRadius: "12px"}}>
+            <NodeHandle handles={input_handles} type="target"/>
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
                 <img src={icon_url} alt={`${title} Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
@@ -77,13 +87,19 @@ const BaseNode: React.FC<BaseNodeProps> = ({
             <Card.Body className="bg-light">
                 <Form>
                     <Form.Group className="mb-3">
-                        <Form.Label className="text-primary">{inputLabel}</Form.Label>
-                        {renderInput()}
+                        {
+                            inputs.map((input, index) => (
+                                <>
+                                    <Form.Label key={index}>{input.inputLabel}</Form.Label>
+                                    {renderInput(input)}
+                                </>
+
+                            ))
+                        }
                     </Form.Group>
                 </Form>
             </Card.Body>
-            <NodeHandle handles={output_handles} type="source" />
-
+            <NodeHandle handles={output_handles} type="source"/>
         </Card>
     );
 };
