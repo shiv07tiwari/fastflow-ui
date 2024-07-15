@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Card, Accordion, Spinner } from 'react-bootstrap';
+import { underscoreToReadable } from "../utils";
 
 interface DataItem {
   id: string;
-  output: {
-    response: Record<string, any> | string;
-  };
+  name: string;
+  output: Record<string, string | string[]>;
 }
 
 interface ExecutionResultsProps {
@@ -31,29 +31,23 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data,
   };
 
   const renderResponseItem = (key: string, value: any) => {
-    if (typeof value === 'object' && value !== null) {
+    // Check if the value is an array
+    if (Array.isArray(value)) {
       return (
-        <Accordion key={key}>
-          <Accordion.Item eventKey="0">
-            <Accordion.Header>{key}</Accordion.Header>
-            <Accordion.Body>
-              {Object.entries(value).map(([subKey, subValue]) => renderResponseItem(`${key}.${subKey}`, subValue))}
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+        <div key={key} className="mb-2">
+          <strong>{key}:</strong> {value.join(', ')}
+        </div>
       );
     }
+    // Handle primitive string values
     return (
-      <div key={key} className="mb-2">
-        <strong>{key}:</strong> {String(value)}
+      <div key={key} className="mb-2 monospace">
+        {String(value)}
       </div>
     );
   };
 
-  const renderResponse = (response: Record<string, any> | string) => {
-    if (typeof response === 'string') {
-      return <pre className="mb-0">{response}</pre>;
-    }
+  const renderResponse = (response: Record<string, any>) => {
     return Object.entries(response).map(([key, value]) => renderResponseItem(key, value));
   };
 
@@ -78,14 +72,14 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data,
                   style={{ cursor: 'pointer', backgroundColor: '#f8f9fa' }}
                   className="d-flex justify-content-between align-items-center"
                 >
-                  <span className="fw-bold">ID: {item.id}</span>
+                  <span className="fw-bold">Node: {underscoreToReadable(item.name)}</span>
                   <Button variant="outline-secondary" size="sm">
                     {expandedIds.includes(item.id) ? 'Collapse' : 'Expand'}
                   </Button>
                 </Card.Header>
                 {expandedIds.includes(item.id) && (
                   <Card.Body>
-                    {renderResponse(item.output.response)}
+                    {renderResponse(item.output)}
                   </Card.Body>
                 )}
               </Card>
@@ -94,9 +88,7 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data,
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          Close
-        </Button>
+        <Button variant="secondary" onClick={onHide}>Close</Button>
       </Modal.Footer>
     </Modal>
   );

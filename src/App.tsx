@@ -3,15 +3,34 @@ import './firebase';
 import {ReactFlowProvider} from "reactflow";
 import Workflow from "./pages/workflow";
 
+import {
+    createBrowserRouter,
+    RouterProvider
+} from "react-router-dom"
 
-const App: React.FC = () => {
-  return (
-    <ReactFlowProvider>
-        <div className="d-flex flex-row">
-            <Workflow workflowId={'WF0'} />
+function App() {
+    /*
+     Define the routes for the application and render the appropriate component based on the route.
+    */
+
+    const router = createBrowserRouter([
+        {
+            path: "/",
+            element: <div>Welcome to FastFlow</div>,
+        },
+        // Define the route for the workflow page with workflow id as a parameter
+        {
+            path: "/workflow/:id",
+            element: <Workflow/>,
+        }
+    ]);
+    return (
+        <div>
+            <ReactFlowProvider>
+                <RouterProvider router={router}/>
+            </ReactFlowProvider>
         </div>
-    </ReactFlowProvider>
-  );
-};
+    );
+}
 
 export default App;

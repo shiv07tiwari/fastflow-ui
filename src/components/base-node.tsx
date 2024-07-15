@@ -8,7 +8,6 @@ import {UploadStatus} from "../hooks/useHandleFileUpload";
 interface InputProps {
     key: string;
     inputLabel: string;
-    inputIcon: React.ReactNode;
     inputType?: string;
 }
 
@@ -18,6 +17,7 @@ export interface BaseNodeProps {
     data: Node;
     handleInputChange: (e: React.ChangeEvent<any>, key: string) => void;
     status?: UploadStatus;
+    icon?: string;
 }
 
 const BaseNode: React.FC<BaseNodeProps> = ({
@@ -25,7 +25,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                                                title,
                                                handleInputChange,
                                                status,
-                                               inputs
+                                               inputs,
+                                               icon
                                            }) => {
     const {getNode} = useWorkflowStore();
     const node = getNode(data.id);
@@ -36,10 +37,10 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         return null;
     }
 
-    const {icon_url, input_handles, output_handles} = node;
+    const { input_handles, output_handles} = node;
 
     const renderInput = (input: InputProps) => {
-        const {key, inputIcon, inputType} = input;
+        const {key, inputType} = input;
         const {available_inputs} = node;
         if (inputType === 'file') {
             return (
@@ -62,7 +63,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         } else {
             return (
                 <InputGroup>
-                    <InputGroup.Text className="bg-white">{inputIcon}</InputGroup.Text>
                     <Form.Control
                         as={inputType === "text" ? "textarea" : "input"}
                         placeholder={`Enter your ${key}`}
@@ -80,7 +80,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         <Card className="shadow-sm bg-light" style={{width: "320px", borderRadius: "12px"}}>
             <NodeHandle handles={input_handles} type="target"/>
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
-                <img src={icon_url} alt={`${title} Icon`} className="mr-3"
+                <img src={`/node-icons/${icon}`} alt={`${title} Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
                 <span className="font-weight-bold fs-5">{node.name}</span>
             </Card.Header>

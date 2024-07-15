@@ -39,12 +39,12 @@ const FileReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
                 {
                     key: "file_path",
                     inputLabel: "Upload File",
-                    inputIcon: <BsFillFileEarmarkTextFill/>,
                     inputType: "file"
                 }
             ]}
             handleInputChange={handleInputChange}
             status={status}
+            icon="folder.png"
         />
     );
 };

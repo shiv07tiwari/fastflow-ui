@@ -21,11 +21,11 @@ const WebScrapperNode: React.FC<NodeInput> = ({data}) => {
                 {
                     key: "url",
                     inputLabel: "URL",
-                    inputIcon: <FaGlobe/>,
                     inputType: "url"
                 }
             ]}
             handleInputChange={handleInputChange}
+            icon="web.png"
         />
     );
 };

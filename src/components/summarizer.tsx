@@ -21,13 +21,13 @@ const Summarizer: React.FC<NodeInput> = ({data}) => {
             title="Gemini AI"
             inputs={[
                 {
-                    key: "content",
+                    key: "input_content",
                     inputLabel: "Content",
-                    inputIcon: <FaRobot/>,
                     inputType: "text"
                 }
             ]}
             handleInputChange={handleInputChange}
+            icon="summarizer.png"
         />
     );
 };

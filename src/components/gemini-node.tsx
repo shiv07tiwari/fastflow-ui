@@ -17,11 +17,11 @@ const GeminiNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="Gemini AI"
+            icon="ai.png"
             inputs={[
                 {
                     key: "prompt",
                     inputLabel: "Prompt",
-                    inputIcon: <FaRobot/>,
                     inputType: "text"
                 }
             ]}

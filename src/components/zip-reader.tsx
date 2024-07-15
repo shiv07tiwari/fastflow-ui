@@ -1,19 +1,18 @@
 import React from 'react';
-import {BsFillFileEarmarkTextFill} from "react-icons/bs";
+import { BsFillFileEarmarkTextFill } from "react-icons/bs";
 import BaseNode from "./base-node";
-import {Node} from "../types";
-import {useWorkflowStore} from "../store/workflow-store";
+import { Node } from "../types";
+import { useWorkflowStore } from "../store/workflow-store";
 import {useFileUpload} from "../hooks/useHandleFileUpload";
 
 interface FileReaderNodeProps {
     data: Node;
 }
 
-const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
-    const {updateNodeAvailableInputs} = useWorkflowStore();
+const ZipReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
+    const { updateNodeAvailableInputs } = useWorkflowStore();
+
     const onComplete = (downloadURL: string, status: string) => {
-        console.log(downloadURL)
-        console.log(status)
         if (status === 'successful' && downloadURL) {
             updateNodeAvailableInputs(data.id, "file_path", downloadURL);
         }
@@ -24,8 +23,9 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
     );
 
     // Handle the file directly in the input handler
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const file = e.target.files?.[0];
+        console.log(file)
         if (file) {
             uploadFile(file);
         }
@@ -34,19 +34,19 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
     return (
         <BaseNode
             data={data}
-            title="Resume Analysis"
+            title="Zip Reader"
             inputs={[
                 {
-                    key: "instructions",
-                    inputLabel: "Additional instructions or notes",
-                    inputType: "text"
+                    key: "file_path",
+                    inputLabel: "Upload Zip File",
+                    inputType: "file"
                 }
             ]}
             handleInputChange={handleInputChange}
             status={status}
-            icon="resume.png"
+            icon="zip-folder.png"
         />
     );
 };
 
-export default ResumeAnalysisNode;
+export default ZipReaderNode;
