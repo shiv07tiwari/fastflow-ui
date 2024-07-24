@@ -65,7 +65,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({ onClose, onSelectNode }
         bottom: 0,
         width: '320px',
         backgroundColor: theme.background,
-        transition: 'left 0.3s ease',
+        transition: 'right 0.3s ease',
         zIndex: 5,
         overflowY: 'auto',
         boxShadow: `0 4px 12px ${theme.shadow}`,
@@ -89,7 +89,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({ onClose, onSelectNode }
           <input
             type="text"
             className="form-control"
-            placeholder="Search nodes..."
+            placeholder="Search nodes"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ backgroundColor: theme.background, border: `1px solid ${theme.border}` }}

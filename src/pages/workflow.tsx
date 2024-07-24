@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import ReactFlow, { Controls, Background, BackgroundVariant, MiniMap } from 'reactflow';
+import ReactFlow, { Controls, Background, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useWorkflowData } from "../hooks/useWorkflowData";
 import { useExecuteWorkflow } from "../hooks/useExecuteWorkflow";
 import { useReactFlowHandlers } from "../hooks/useStoreHandlers";
 import { useWorkflowStore } from "../store/workflow-store";
-import { MdPlayArrow, MdMenu, MdClose } from 'react-icons/md';
-import GeminiNode from "../components/gemini-node";
-import TextNode from "../components/text-node";
-import AvailableNodes from "./available-nodes";
-import WebScrapperNode from "../components/web_scrapper_node";
-import ExecutionResults from "./execution-results";
-import FileReaderNode from "../components/file-reader";
-import Summarizer from "../components/summarizer";
-import ZipReaderNode from "../components/zip-reader";
-import ResumeAnalysisNode from "../components/resume-analysis";
+import {MdPlayArrow, MdMenu, MdClose, MdReplay} from 'react-icons/md';
+import GeminiNode from "../nodes/gemini-node";
+import TextNode from "../nodes/text-node";
+import AvailableNodes from "../views/available-nodes";
+import WebScrapperNode from "../nodes/web_scrapper_node";
+import ExecutionResults from "../views/execution-results";
+import FileReaderNode from "../nodes/file-reader";
+import Summarizer from "../nodes/summarizer";
+import ZipReaderNode from "../nodes/zip-reader";
+import ResumeAnalysisNode from "../nodes/resume-analysis";
 import {useParams} from "react-router-dom";
+import RedditNode from "../nodes/reddit-node";
+import WorkflowRuns from "../views/workflow-runs";
 
 const nodeTypes = {
   gemini: GeminiNode,
@@ -25,6 +27,7 @@ const nodeTypes = {
   resume_analysis: ResumeAnalysisNode,
   summarizer: Summarizer,
   zip_reader: ZipReaderNode,
+  reddit_bot: RedditNode,
 };
 
 interface StyledButtonProps {
@@ -60,7 +63,9 @@ const Workflow: React.FC<WorkflowProps> = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [isWorkflowRunOpen, setIsWorkflowRunOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleWorkflowRun = () => setIsWorkflowRunOpen(!isWorkflowRunOpen);
   useWorkflowData(id || '');
   const { executeWorkflow, isLoading, data } = useExecuteWorkflow(id || '');
   const { onNodesChange, onEdgesChange, onConnect, onAddNode } = useReactFlowHandlers();
@@ -80,33 +85,38 @@ const Workflow: React.FC<WorkflowProps> = () => {
           <StyledButton onClick={triggerWorkflow} icon={<MdPlayArrow size={18} />}>
             Execute Workflow
           </StyledButton>
+          <StyledButton onClick={toggleWorkflowRun} icon={<MdReplay size={18} />}>
+            See Previous Runs
+          </StyledButton>
       </div>
 
-      <div className="content" style={{ display: 'flex', height: 'calc(100vh - 60px)', marginTop: '60px' }}>
-        {isMenuOpen && (
-          <div className="sidebar" style={{ width: '250px', backgroundColor: '#f8f9fa', borderRight: '1px solid #dee2e6', overflowY: 'auto' }}>
-            <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode} />
-          </div>
-        )}
-        <div className="react-flow-wrapper" style={{ flexGrow: 1 }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-          >
-            <Controls />
-            <MiniMap />
-            <Background />
-          </ReactFlow>
+        <div className="content" style={{display: 'flex', height: 'calc(100vh - 60px)', marginTop: '60px'}}>
+            {isMenuOpen && (
+                <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
+            )}
+            <div className="react-flow-wrapper" style={{flexGrow: 1}}>
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    nodeTypes={nodeTypes}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                >
+                    <Controls/>
+                    <MiniMap/>
+                    <Background/>
+                </ReactFlow>
+            </div>
         </div>
-      </div>
+        {
+            isWorkflowRunOpen && <WorkflowRuns workflow_id={id || ''} show={isWorkflowRunOpen} onHide={toggleWorkflowRun}/>
+        }
 
-      {isResultsOpen && (
-        <ExecutionResults show={isResultsOpen} onHide={() => setIsResultsOpen(false)} data={data} isLoading={isLoading} />
-      )}
+        {isResultsOpen && (
+            <ExecutionResults show={isResultsOpen} onHide={() => setIsResultsOpen(false)} data={data}
+                              isLoading={isLoading}/>
+        )}
     </div>
   );
 };

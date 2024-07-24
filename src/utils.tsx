@@ -102,3 +102,8 @@ export const underscoreToReadable = (text: string) => {
         )
         .join(' ');                      // Join the words with spaces
 }
+
+export const timestampToHumanReadable = (timestamp: number) => {
+    console.log(timestamp, new Date(timestamp).toLocaleString());
+    return new Date(timestamp).toLocaleString();
+}

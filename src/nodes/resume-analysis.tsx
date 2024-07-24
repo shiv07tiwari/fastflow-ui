@@ -15,7 +15,7 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
         console.log(downloadURL)
         console.log(status)
         if (status === 'successful' && downloadURL) {
-            updateNodeAvailableInputs(data.id, "file_path", downloadURL);
+            updateNodeAvailableInputs(data.id, "input_resume", downloadURL);
         }
     };
 
@@ -24,10 +24,14 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
     );
 
     // Handle the file directly in the input handler
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            uploadFile(file);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+        if (key === "input_resume") {
+            const file = e.target.files?.[0];
+            if (file) {
+                uploadFile(file);
+            }
+        } else {
+            updateNodeAvailableInputs(data.id, key, e.target.value);
         }
     };
 
@@ -40,7 +44,7 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
                     key: "instructions",
                     inputLabel: "Additional instructions or notes",
                     inputType: "text"
-                }
+                },
             ]}
             handleInputChange={handleInputChange}
             status={status}

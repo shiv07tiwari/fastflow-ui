@@ -18,7 +18,6 @@ export interface NodeInput {
     data: Node;
 }
 
-
 export interface Node extends ReactNode {
     id: string;
     available_inputs: any;
@@ -29,6 +28,5 @@ export interface Node extends ReactNode {
     node: string;
     input_handles: any;
     output_handles: any;
-
     outputs: any;
 }

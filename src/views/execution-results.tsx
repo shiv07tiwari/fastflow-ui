@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Card, Accordion, Spinner } from 'react-bootstrap';
+import { Modal, Button, Card, Spinner } from 'react-bootstrap';
 import { underscoreToReadable } from "../utils";
 
 interface DataItem {
