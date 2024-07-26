@@ -35,13 +35,6 @@ const FileReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
         <BaseNode
             data={data}
             title="File Reader"
-            inputs={[
-                {
-                    key: "file_path",
-                    inputLabel: "Upload File",
-                    inputType: "file"
-                }
-            ]}
             handleInputChange={handleInputChange}
             status={status}
             icon="folder.png"

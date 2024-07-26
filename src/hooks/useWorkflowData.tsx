@@ -23,11 +23,8 @@ export const useWorkflowData = (workflowId: string) => {
                     ...edge,
                     id: `${edge.source}-${edge.target}`
                 }));
-
-                applyLayout(workflowNodesArray, formattedEdges).then(({ nodes: layoutedNodes, edges: layoutedEdges }) => {
-                    setNodes(layoutedNodes);
-                    setEdges(layoutedEdges);
-                });
+                setNodes(workflowNodesArray);
+                setEdges(formattedEdges);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }

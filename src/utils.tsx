@@ -31,6 +31,7 @@ export const applyLayout = (nodes: Node[], edges: Edge[], options = elkOptions):
     nodes: Node[];
     edges: Edge[]
 }> => {
+    // Not used anymore.
     const isHorizontal = options["elk.direction"] === "RIGHT";
 
     const graph = {

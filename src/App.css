@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+
+.landing-page {
+  background-color: #f8f9fa;
+  padding: 0 15px;
+}
+
+.shadow-sm {
+  border-radius: 0.25rem;
+}
+
+.card {
+  margin: 15px 0;
+}

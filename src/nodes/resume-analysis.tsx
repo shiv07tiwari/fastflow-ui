@@ -39,13 +39,6 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
         <BaseNode
             data={data}
             title="Resume Analysis"
-            inputs={[
-                {
-                    key: "instructions",
-                    inputLabel: "Additional instructions or notes",
-                    inputType: "text"
-                },
-            ]}
             handleInputChange={handleInputChange}
             status={status}
             icon="resume.png"

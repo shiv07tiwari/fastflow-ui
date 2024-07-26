@@ -18,6 +18,8 @@ import ResumeAnalysisNode from "../nodes/resume-analysis";
 import {useParams} from "react-router-dom";
 import RedditNode from "../nodes/reddit-node";
 import WorkflowRuns from "../views/workflow-runs";
+import CompanyEnrichmentNode from "../nodes/company-enrichment";
+import UserInputNode from "../nodes/user-input";
 
 const nodeTypes = {
   gemini: GeminiNode,
@@ -28,6 +30,8 @@ const nodeTypes = {
   summarizer: Summarizer,
   zip_reader: ZipReaderNode,
   reddit_bot: RedditNode,
+  company_enrichment: CompanyEnrichmentNode,
+  user_input: UserInputNode
 };
 
 interface StyledButtonProps {

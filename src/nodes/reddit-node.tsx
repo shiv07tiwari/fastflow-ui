@@ -17,23 +17,6 @@ const RedditNode: React.FC<NodeInput> = ({data}) => {
             data={data}
             title="Reddit AI"
             icon="reddit.png"
-            inputs={[
-                {
-                    key: "query",
-                    inputLabel: "Search Query",
-                    inputType: "text"
-                },
-                {
-                    key: "subreddit",
-                    inputLabel: "Subreddit",
-                    inputType: "text"
-                },
-                {
-                    key: "post_limit",
-                    inputLabel: "Number of posts [Default: 10]",
-                    inputType: "number"
-                }
-            ]}
             handleInputChange={handleInputChange}
         />
     );

@@ -17,13 +17,6 @@ const WebScrapperNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="Web Scraper"
-            inputs={[
-                {
-                    key: "url",
-                    inputLabel: "URL",
-                    inputType: "url"
-                }
-            ]}
             handleInputChange={handleInputChange}
             icon="web.png"
         />

@@ -1,19 +1,20 @@
 import React from 'react';
 import {Card, Form, InputGroup, Spinner} from "react-bootstrap";
 import {useWorkflowStore} from "../store/workflow-store";
-import {Node} from "../types";
+import {BaseNodeInput, Node} from "../types";
 import NodeHandle from "./node-handle";
 import {UploadStatus} from "../hooks/useHandleFileUpload";
+import {underscoreToReadable} from "../utils";
 
 interface InputProps {
     key: string;
     inputLabel: string;
     inputType?: string;
+    enabled?: boolean;
 }
 
 export interface BaseNodeProps {
     title: string;
-    inputs: InputProps[];
     data: Node;
     handleInputChange: (e: React.ChangeEvent<any>, key: string) => void;
     status?: UploadStatus;
@@ -25,10 +26,9 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                                                title,
                                                handleInputChange,
                                                status,
-                                               inputs,
                                                icon
                                            }) => {
-    const {getNode} = useWorkflowStore();
+    const {getNode, edges} = useWorkflowStore();
     const node = getNode(data.id);
 
     if (!node) {
@@ -37,15 +37,26 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         return null;
     }
 
-    const { input_handles, output_handles} = node;
+    const { external_inputs, output_handles, internal_inputs, common_inputs } = node;
+
+    const connectedExternalInputHandles = edges.filter(edge => edge.target === data.id).map(edge => edge.targetHandle);
+    const inputHandles = [...external_inputs, ...common_inputs].map(input => input.key);
+    const internalInputs = [...internal_inputs, ...common_inputs].map((input: BaseNodeInput) => {
+        return {
+            key: input.key,
+            inputLabel: underscoreToReadable(input.key),
+            inputType: input.input_type,
+            enabled: !connectedExternalInputHandles.includes(input.key)  // Disable if connected to handle
+        }
+    });
 
     const renderInput = (input: InputProps) => {
-        const {key, inputType} = input;
+        const {key, inputType, inputLabel} = input;
         const {available_inputs} = node;
         if (inputType === 'file') {
             return (
                 <>
-                    <input type="file" onChange={(e) => {
+                    <input disabled={!input.enabled} type="file" onChange={(e) => {
                         handleInputChange(e, key);
                     }} className="form-control"/>
                     {
@@ -64,12 +75,13 @@ const BaseNode: React.FC<BaseNodeProps> = ({
             return (
                 <InputGroup>
                     <Form.Control
+                        disabled={!input.enabled}
                         as={inputType === "text" ? "textarea" : "input"}
-                        placeholder={`Enter your ${key}`}
+                        placeholder={`Enter your ${inputLabel}`}
                         value={available_inputs[key] || ''}
                         onChange={(e) => handleInputChange(e, key)}
                         className="border-left-0"
-                        style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
+                        // style={inputType === "text" ? {height: '60px', resize: 'none'} : {}}
                     />
                 </InputGroup>
             );
@@ -78,7 +90,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
     return (
         <Card className="shadow-sm bg-light" style={{width: "320px", borderRadius: "12px"}}>
-            <NodeHandle handles={input_handles} type="target"/>
+            <NodeHandle handles={inputHandles} type="target"/>
             <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
                 <img src={`/node-icons/${icon}`} alt={`${title} Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
@@ -88,10 +100,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                 <Form>
                     <Form.Group className="mb-3">
                         {
-                            inputs.map((input, index) => (
+                            internalInputs.map((input, index) => (
                                 <>
                                     <Form.Label key={index}>{input.inputLabel}</Form.Label>
                                     {renderInput(input)}
+                                    <div className="mb-3" />
                                 </>
 
                             ))

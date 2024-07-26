@@ -1,5 +1,6 @@
 import React from 'react';
 import {Handle, HandleType, Position} from 'reactflow';
+import {underscoreToReadable} from "../utils";
 
 interface NodeHandleProps {
     handles: string[];
@@ -58,7 +59,7 @@ class NodeHandle extends React.Component<NodeHandleProps> {
                                 pointerEvents: 'none',
                             }}
                         >
-              {handle.id}
+              {underscoreToReadable(handle.id)}
             </span>
                     </div>
                 ))}

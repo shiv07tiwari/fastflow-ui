@@ -18,13 +18,6 @@ const GeminiNode: React.FC<NodeInput> = ({data}) => {
             data={data}
             title="Gemini AI"
             icon="ai.png"
-            inputs={[
-                {
-                    key: "prompt",
-                    inputLabel: "Prompt",
-                    inputType: "text"
-                }
-            ]}
             handleInputChange={handleInputChange}
         />
     );

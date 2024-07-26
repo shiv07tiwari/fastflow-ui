@@ -35,13 +35,6 @@ const ZipReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
         <BaseNode
             data={data}
             title="Zip Reader"
-            inputs={[
-                {
-                    key: "file_path",
-                    inputLabel: "Upload Zip File",
-                    inputType: "file"
-                }
-            ]}
             handleInputChange={handleInputChange}
             status={status}
             icon="zip-folder.png"

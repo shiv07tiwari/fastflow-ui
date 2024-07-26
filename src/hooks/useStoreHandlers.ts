@@ -39,12 +39,16 @@ export const useReactFlowHandlers = () => {
             const height = container ? container.clientHeight : window.innerHeight;
 
             const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
-            const innerInput = baseNode.inputs.filter((input) => !input.includes("input"));
-            const inputDictionary = innerInput.reduce((acc, current) => {
-                acc[current] = null;
+
+            // Pre set all the internal inputs in required and available inputs
+            const internalInputs = baseNode.inputs.filter((input) => input.handle_type === "internal");
+            const externalInputs = baseNode.inputs.filter((input) => input.handle_type === "external");
+            const commonInputs = baseNode.inputs.filter((input) => input.handle_type === "common");
+
+            const initAvailableInputs = [...internalInputs, ...commonInputs].reduce((acc, current) => {
+                acc[current.key] = null;
                 return acc;
             }, {} as { [key: string]: null });
-            const handleInputs = baseNode.inputs.filter((input) => input.includes("input"));
 
             const node = {
                 ...baseNode,
@@ -54,13 +58,14 @@ export const useReactFlowHandlers = () => {
                     x: width / 2 + Math.random() * 100,
                     y: height / 2 + Math.random() * 100
                 },
-                available_inputs: inputDictionary,
-                required_inputs: innerInput,
+                available_inputs: initAvailableInputs,
                 node: baseNode.id,
                 data: {
                     id: nodeId,
                 },
-                input_handles: handleInputs,
+                external_inputs: externalInputs,
+                internal_inputs: internalInputs,
+                common_inputs: commonInputs,
                 output_handles: baseNode.outputs,
                 outputs: {}
             } as Node;

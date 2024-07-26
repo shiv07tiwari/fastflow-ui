@@ -7,12 +7,13 @@ import {
     createBrowserRouter,
     RouterProvider
 } from "react-router-dom"
+import LandingPage from "./pages/landing";
 
 function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <div>Welcome to FastFlow</div>,
+            element: <LandingPage/>,
         },
         {
             path: "/workflow/:id",

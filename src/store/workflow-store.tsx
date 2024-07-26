@@ -32,17 +32,12 @@ export const useWorkflowStore = create(devtools<WorkflowState>((set, get) => ({ 
         set((state) => {
             const updatedNodes = state.nodes.map((node) => {
                 if (node.id === nodeId) {
-                    // If not already present, add the key in required_inputs array
-                    let newRequired = node.required_inputs;
-                    if (node.required_inputs.indexOf(key) === -1)
-                        newRequired = [...node.required_inputs, key];
                     return {
                         ...node,
                         available_inputs: {
                             ...node.available_inputs,
                             [key]: value,
                         },
-                        required_inputs: newRequired
                     };
                 }
                 return node;
@@ -56,12 +51,9 @@ export const useWorkflowStore = create(devtools<WorkflowState>((set, get) => ({ 
                 if (node.id === nodeId) {
                     const available_inputs = {...node.available_inputs};
                     delete available_inputs[key];
-
-                    const newRequired = node.required_inputs.filter((inputKey: string) => inputKey !== key);
                     return {
                         ...node,
                         available_inputs,
-                        required_inputs: newRequired
                     }
                 }
                 return node;
