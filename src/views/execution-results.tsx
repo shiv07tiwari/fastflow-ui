@@ -4,7 +4,7 @@ import { underscoreToReadable } from "../utils";
 
 interface DataItem {
   id: string;
-  name: string;
+  key: string;
   output: Record<string, string | string[]>;
 }
 
@@ -72,7 +72,7 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data,
                   style={{ cursor: 'pointer', backgroundColor: '#f8f9fa' }}
                   className="d-flex justify-content-between align-items-center"
                 >
-                  <span className="fw-bold">Node: {underscoreToReadable(item.name)}</span>
+                  <span className="fw-bold">Node: {underscoreToReadable(item.key)}</span>
                   <Button variant="outline-secondary" size="sm">
                     {expandedIds.includes(item.id) ? 'Collapse' : 'Expand'}
                   </Button>

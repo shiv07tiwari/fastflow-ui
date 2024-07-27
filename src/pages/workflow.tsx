@@ -20,6 +20,8 @@ import RedditNode from "../nodes/reddit-node";
 import WorkflowRuns from "../views/workflow-runs";
 import CompanyEnrichmentNode from "../nodes/company-enrichment";
 import UserInputNode from "../nodes/user-input";
+import SheetWriterNode from "../nodes/file_processing/sheet-writer";
+import ScorerNode from "../nodes/scoring";
 
 const nodeTypes = {
   gemini: GeminiNode,
@@ -31,7 +33,9 @@ const nodeTypes = {
   zip_reader: ZipReaderNode,
   reddit_bot: RedditNode,
   company_enrichment: CompanyEnrichmentNode,
-  user_input: UserInputNode
+  user_input: UserInputNode,
+  sheet_writer: SheetWriterNode,
+  scoring:ScorerNode
 };
 
 interface StyledButtonProps {
