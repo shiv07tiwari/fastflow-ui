@@ -1,146 +1,245 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import axios from "axios";
-import { Card, Spinner } from "react-bootstrap";
-import { BaseNode } from "../types";
-import { MdSearch, MdClose } from "react-icons/md";
+import {Spinner, Card, Button, Dropdown} from "react-bootstrap";
+import {BaseNode} from "../types";
+import {MdSearch, MdClose, MdMoreVert} from "react-icons/md";
+import NodeCard from "../common/node-card";
 
 interface AvailableNodesProps {
-  onClose: () => void;
-  onSelectNode: (node: BaseNode) => void;
+    onSelectNode: (node: BaseNode) => void;
+    onClose: () => void;
 }
 
-const AvailableNodes: React.FC<AvailableNodesProps> = ({ onClose, onSelectNode }) => {
-  const [nodes, setNodes] = useState<BaseNode[]>([]);
-  const [filteredNodes, setFilteredNodes] = useState<BaseNode[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState<string | null>(null);
+const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) => {
+    const [nodes, setNodes] = useState<BaseNode[]>([]);
+    const [filteredNodes, setFilteredNodes] = useState<BaseNode[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState<string | null>(null);
 
-  const fetchNodes = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get('http://localhost:8000/nodes');
-      setNodes(response.data);
-      setFilteredNodes(response.data);
-    } catch (error) {
-      console.error("Error fetching nodes:", error);
-      setError("Failed to load nodes. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    const fetchNodes = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const response = await axios.get('http://localhost:8000/nodes');
+            setNodes(response.data);
+            setFilteredNodes(response.data);
+        } catch (error) {
+            console.error("Error fetching nodes:", error);
+            setError("Failed to load nodes. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
-  useEffect(() => {
-    fetchNodes();
-  }, [fetchNodes]);
+    useEffect(() => {
+        fetchNodes();
+    }, [fetchNodes]);
 
-  useEffect(() => {
-    const filtered = nodes.filter(node =>
-      node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      node.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredNodes(filtered);
-  }, [searchTerm, nodes]);
+    useEffect(() => {
+        const filtered = nodes.filter(node =>
+            node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            node.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredNodes(filtered);
+    }, [searchTerm, nodes]);
 
-  const getBadgeColor = (nodeType: string): string => {
-    switch (nodeType.toLowerCase()) {
-      case 'input': return '#4A90E2';
-      case 'ai': return '#50C878';
-      case 'output': return '#5BC0DE';
-      default: return '#A9A9A9';
-    }
-  };
-
-  return (
-    <div className="d-flex flex-column"
-      style={{
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        width: '320px',
-        backgroundColor: '#F8F9FA',
-        transition: 'right 0.3s ease',
-        zIndex: 5,
-        overflowY: 'auto',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        borderRadius: '0 12px 12px 0',
-      }}
-    >
-      <div className="d-flex justify-content-between align-items-center p-3"
-        style={{ borderBottom: '1px solid #E0E0E0', backgroundColor: '#FFFFFF' }}
-      >
-        <h5 className="mb-0" style={{ color: '#333333', fontWeight: 600 }}>Available Nodes</h5>
-        <button className="btn btn-link p-0" onClick={onClose} aria-label="Close">
-          <MdClose size={24} color="#333333" />
-        </button>
-      </div>
-
-      <div className="p-3" style={{ backgroundColor: '#FFFFFF' }}>
-        <div className="input-group">
-          <span className="input-group-text" style={{ backgroundColor: '#F8F9FA' }}>
-            <MdSearch size={20} color="#333333" />
-          </span>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search nodes"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ backgroundColor: '#F8F9FA', border: '1px solid #E0E0E0' }}
-          />
-        </div>
-      </div>
-
-      <div className="overflow-auto flex-grow-1 p-3">
-        {isLoading ? (
-          <div className="d-flex justify-content-center align-items-center h-100">
-            <Spinner animation="border" role="status" style={{ color: '#0E6DFC' }}>
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        ) : error ? (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
-        ) : (
-          filteredNodes.map((node) => (
-            <Card key={node.id} className="mb-3"
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderColor: '#E0E0E0',
-                opacity: node.is_active ? 1 : 0.5,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-              }}
-              onClick={() => onSelectNode(node)}
-            >
-              <Card.Body>
-                <div className="d-flex align-items-center mb-2">
-                  <img src={node.icon_url} alt={node.name} className="me-3" style={{ width: '32px', height: '32px' }} />
-                  <h6 className="mb-0" style={{ color: '#333333', fontWeight: 600 }}>{node.name}</h6>
+    return (
+        <div className="available-nodes-container">
+            <div className="search-container">
+                <div className="search-input-wrapper">
+                    <MdSearch size={24} className="search-icon me-5" color="black"/>
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search nodes"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button className="close-button ms-2 me-1" onClick={onClose} aria-label="Close">
+                        <MdClose size={24}/>
+                    </button>
                 </div>
-                <p className="mb-2 small" style={{ color: '#333333', opacity: 0.8 }}>{node.description}</p>
-                <span className="badge"
-                  style={{
-                    backgroundColor: getBadgeColor(node.node_type),
-                    color: '#FFFFFF',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: 500,
-                  }}
-                >
-                  {node.node_type}
-                </span>
-              </Card.Body>
-            </Card>
-          ))
-        )}
-      </div>
-    </div>
-  );
+            </div>
+
+            <div className="nodes-grid-container">
+                {isLoading ? (
+                    <div className="loading-spinner">
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    </div>
+                ) : error ? (
+                    <div className="error-message">
+                        {error}
+                    </div>
+                ) : (
+                    <div className="nodes-flex-container">
+                        {filteredNodes.map((node) => (
+                            <NodeCard
+                                node={node}
+                                key={node.id}
+                                size='large'
+                                onSelect={onSelectNode}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <style>{`
+        .available-nodes-container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 100%;
+          max-width: 514px;
+          transition: right 0.3s ease;
+          z-index: 5;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border-radius: 0 12px 12px 0;
+        }
+
+        .available-nodes-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px 20px;
+          border-bottom: 1px solid #E0E0E0;
+          background-color: #FFFFFF;
+        }
+
+        .available-nodes-header h5 {
+          margin: 0;
+          color: #333333;
+          font-weight: 600;
+          font-size: 18px;
+        }
+
+        .close-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #333333;
+          padding: 4px;
+        }
+
+        .search-container {
+          padding: 16px 20px;
+          background-color: #FFFFFF;
+          border-bottom: 1px solid #E0E0E0;
+        }
+
+        .search-input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .search-icon {
+          position: absolute;
+          left: 12px;
+          color: #757575;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 10px 12px 10px 40px;
+          border: 1px solid #E0E0E0;
+          border-radius: 24px;
+          font-size: 16px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+          border-color: #4A90E2;
+        }
+
+        .nodes-grid-container {
+          flex-grow: 1;
+          overflow-y: auto;
+          padding: 16px;
+        }
+
+        .nodes-flex-container {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .node-card {
+          flex-basis: calc(50% - 8px);
+          max-width: calc(50% - 8px);
+          border: none;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .node-image {
+          height: 120px;
+          background-size: cover;
+          background-position: center;
+          background-color: #E0E0E0;
+        }
+
+        .node-content {
+          padding: 16px;
+        }
+
+        .node-title {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333333;
+        }
+
+        .node-description {
+          font-size: 14px;
+          color: #666666;
+          margin-bottom: 16px;
+        }
+
+        .select-button {
+          width: 100%;
+          background-color: #4A90E2;
+          border: none;
+          color: white;
+          padding: 8px 16px;
+          font-size: 14px;
+          font-weight: 600;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+
+        .select-button:hover {
+          background-color: #3A80D2;
+        }
+
+        .loading-spinner, .error-message {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+
+        .error-message {
+          color: #dc3545;
+          text-align: center;
+        }
+
+        @media (max-width: 600px) {
+          .node-card {
+            flex-basis: 100%;
+            max-width: 100%;
+          }
+        }
+      `}</style>
+        </div>
+    );
 };
 
 export default AvailableNodes;

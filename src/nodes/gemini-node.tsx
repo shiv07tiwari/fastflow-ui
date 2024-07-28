@@ -17,7 +17,6 @@ const GeminiNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="Gemini AI"
-            icon="ai.png"
             handleInputChange={handleInputChange}
         />
     );

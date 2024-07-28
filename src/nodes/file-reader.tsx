@@ -37,7 +37,6 @@ const FileReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
             title="File Reader"
             handleInputChange={handleInputChange}
             status={status}
-            icon="folder.png"
         />
     );
 };

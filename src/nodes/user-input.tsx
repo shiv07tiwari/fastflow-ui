@@ -18,7 +18,6 @@ const UserInputNode: React.FC<NodeInput> = ({data}) => {
             data={data}
             title="Input"
             handleInputChange={handleInputChange}
-            icon="input.png"
         />
     );
 };

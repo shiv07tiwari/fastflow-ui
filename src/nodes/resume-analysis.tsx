@@ -41,7 +41,6 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
             title="Resume Analysis"
             handleInputChange={handleInputChange}
             status={status}
-            icon="resume.png"
         />
     );
 };

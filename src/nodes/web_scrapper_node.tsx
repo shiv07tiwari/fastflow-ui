@@ -18,7 +18,6 @@ const WebScrapperNode: React.FC<NodeInput> = ({data}) => {
             data={data}
             title="Web Scraper"
             handleInputChange={handleInputChange}
-            icon="web.png"
         />
     );
 };

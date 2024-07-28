@@ -18,7 +18,6 @@ export interface BaseNodeProps {
     data: Node;
     handleInputChange: (e: React.ChangeEvent<any>, key: string) => void;
     status?: UploadStatus;
-    icon?: string;
 }
 
 const BaseNode: React.FC<BaseNodeProps> = ({
@@ -26,7 +25,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                                                title,
                                                handleInputChange,
                                                status,
-                                               icon
                                            }) => {
     const {getNode, edges} = useWorkflowStore();
     const node = getNode(data.id);
@@ -69,6 +67,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                             <span className="text-success mt-32">File uploaded successfully</span>
                         )
                     }
+                    <div>{node.available_inputs['file_path']}</div>
                 </>
             )
         } else {
@@ -91,8 +90,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     return (
         <Card className="shadow-sm bg-light" style={{width: "320px", borderRadius: "12px"}}>
             <NodeHandle handles={inputHandles} type="target"/>
-            <Card.Header className="d-flex align-items-center bg-primary text-white py-3">
-                <img src={`/node-icons/${icon}`} alt={`${title} Icon`} className="mr-3"
+            <Card.Header className="d-flex align-items-center bg-main text-white py-3">
+                <img src={`/node-icons/${node.node}.png`} alt={`${title} Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
                 <span className="font-weight-bold fs-5">{node.name}</span>
             </Card.Header>

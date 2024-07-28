@@ -67,7 +67,7 @@ export const useReactFlowHandlers = () => {
                 internal_inputs: internalInputs,
                 common_inputs: commonInputs,
                 output_handles: baseNode.outputs,
-                outputs: {}
+                outputs: []
             } as Node;
             // @ts-ignore
             delete node.inputs;

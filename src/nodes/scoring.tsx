@@ -17,7 +17,6 @@ const ScorerNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="Scorer"
-            icon="scoring.png"
             handleInputChange={handleInputChange}
         />
     );

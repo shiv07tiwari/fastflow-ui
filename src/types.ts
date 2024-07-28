@@ -36,5 +36,5 @@ export interface Node extends ReactNode {
     internal_inputs: BaseNodeInput[];
     common_inputs: BaseNodeInput[];
     output_handles: any;
-    outputs: any;
+    outputs: [];
 }

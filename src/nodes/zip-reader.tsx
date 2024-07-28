@@ -37,7 +37,6 @@ const ZipReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
             title="Zip Reader"
             handleInputChange={handleInputChange}
             status={status}
-            icon="zip-folder.png"
         />
     );
 };

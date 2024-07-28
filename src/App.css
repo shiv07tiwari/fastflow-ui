@@ -47,6 +47,20 @@
   border-radius: 0.25rem;
 }
 
-.card {
-  margin: 15px 0;
+.custom-gradient-btn {
+  background-image: linear-gradient(to right, #4974e3, #829cde);
+  border: none; /* Remove default border */
+}
+
+.btn-primary {
+    background-color: #4974e3 !important;
+    border-color: #4974e3 !important;
+}
+
+.bg-main {
+    background-color: #4974e3 !important;
+}
+
+.bg-plain {
+    background-color: #829cde !important;
 }

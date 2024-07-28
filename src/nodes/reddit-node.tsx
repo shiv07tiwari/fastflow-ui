@@ -16,7 +16,6 @@ const RedditNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="Reddit AI"
-            icon="reddit.png"
             handleInputChange={handleInputChange}
         />
     );

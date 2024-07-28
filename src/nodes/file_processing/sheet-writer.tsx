@@ -16,7 +16,6 @@ const SheetWriterNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="File Writer"
-            icon="file-writer.png"
             handleInputChange={handleInputChange}
         />
     );

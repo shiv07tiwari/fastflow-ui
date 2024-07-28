@@ -39,6 +39,18 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data,
         </div>
       );
     }
+    // Check if the value is an object
+    if (typeof value === 'object') {
+      return (
+        <div key={key} className="mb-2">
+            {Object.keys(value).map((k) => (
+              <div key={k} className="mb-2 monospace">
+                <strong>{k}:</strong> {value[k]}
+              </div>
+            ))}
+        </div>
+      );
+    }
     // Handle primitive string values
     return (
       <div key={key} className="mb-2 monospace">
@@ -89,6 +101,9 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({ show, onHide, data,
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>Close</Button>
+        <div className="overflow-scroll">
+            <pre>{JSON.stringify(data, null, 2)}</pre>
+        </div>
       </Modal.Footer>
     </Modal>
   );

@@ -8,6 +8,8 @@ import {
     RouterProvider
 } from "react-router-dom"
 import LandingPage from "./pages/landing";
+// Import css file from ./App.css
+import './App.css';
 
 function App() {
     const router = createBrowserRouter([
@@ -18,6 +20,10 @@ function App() {
         {
             path: "/workflow/:id",
             element: <Workflow/>,
+        },
+        {
+            path: "/test",
+            element: <></>,
         }
     ]);
     return (

@@ -20,7 +20,6 @@ const Summarizer: React.FC<NodeInput> = ({data}) => {
             data={data}
             title="Summarizer"
             handleInputChange={handleInputChange}
-            icon="summarizer.png"
         />
     );
 };

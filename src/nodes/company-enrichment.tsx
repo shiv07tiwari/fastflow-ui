@@ -16,7 +16,6 @@ const CompanyEnrichmentNode: React.FC<NodeInput> = ({data}) => {
         <BaseNode
             data={data}
             title="Company Enrichment"
-            icon="company.png"
             handleInputChange={handleInputChange}
         />
     );
