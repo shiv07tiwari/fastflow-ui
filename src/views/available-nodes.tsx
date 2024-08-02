@@ -20,7 +20,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) 
     const fetchNodes = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get('http://localhost:8000/nodes');
+            const response = await axios.get('http://localhost:8000/base-nodes');
             setNodes(response.data);
             setFilteredNodes(response.data);
         } catch (error) {
@@ -93,10 +93,11 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) 
           top: 0;
           bottom: 0;
           width: 100%;
-          max-width: 514px;
+          max-width: 529px;
           transition: right 0.3s ease;
           z-index: 5;
           display: flex;
+          background-color: #FFFFFF;
           flex-direction: column;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           border-radius: 0 12px 12px 0;

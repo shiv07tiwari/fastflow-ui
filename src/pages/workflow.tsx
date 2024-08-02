@@ -78,10 +78,14 @@ const Workflow: React.FC<WorkflowProps> = () => {
     const {executeWorkflow, isLoading, data} = useExecuteWorkflow(id || '');
     const {onNodesChange, onEdgesChange, onConnect, onAddNode} = useReactFlowHandlers();
     const {nodes, edges} = useWorkflowStore();
+    const [runId, setRunId] = useState('');
 
     const triggerWorkflow = () => {
         setIsResultsOpen(true);
-        executeWorkflow();
+        // Generate a random Run ID
+        const runId = Math.random().toString(36);
+        setRunId(runId);
+        executeWorkflow(runId);
     }
 
     return (
@@ -123,8 +127,14 @@ const Workflow: React.FC<WorkflowProps> = () => {
             }
 
             {isResultsOpen && (
-                <ExecutionResults show={isResultsOpen} onHide={() => setIsResultsOpen(false)} data={data}
-                                  isLoading={isLoading}/>
+                <ExecutionResults
+                    show={isResultsOpen}
+                    onHide={() => setIsResultsOpen(false)}
+                    runId={runId}
+                    finalData={data || undefined}
+                    nodes={nodes}
+                    edges={edges}
+                />
             )}
         </div>
     );

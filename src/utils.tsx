@@ -1,4 +1,5 @@
-import {Node, Edge} from "reactflow";
+import {Edge} from "reactflow";
+import { Node } from "./types";
 import ELK from "elkjs/lib/elk.bundled.js";
 
 const elk = new ELK();
@@ -108,3 +109,44 @@ export const timestampToHumanReadable = (timestamp: number) => {
     console.log(timestamp, new Date(timestamp).toLocaleString());
     return new Date(timestamp).toLocaleString();
 };
+
+export const orderNodesByDFS = (nodes: Node[], edges: Edge[]): Node[] => {
+  // Create an adjacency list from the edges
+  const adjacencyList: Record<string, string[]> = {};
+  edges.forEach(edge => {
+    if (!adjacencyList[edge.source]) {
+      adjacencyList[edge.source] = [];
+    }
+    adjacencyList[edge.source].push(edge.target);
+  });
+
+  // Find root nodes (nodes with no incoming edges)
+  const rootNodes = nodes.filter(node =>
+    !edges.some(edge => edge.target === node.id)
+  );
+
+  const visited = new Set<string>();
+  const orderedNodes: Node[] = [];
+
+  function dfs(nodeId: string) {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
+
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      orderedNodes.push(node);
+    }
+
+    const children = adjacencyList[nodeId] || [];
+    for (const childId of children) {
+      dfs(childId);
+    }
+  }
+
+  // Start DFS from each root node
+  for (const rootNode of rootNodes) {
+    dfs(rootNode.id);
+  }
+
+  return orderedNodes;
+}

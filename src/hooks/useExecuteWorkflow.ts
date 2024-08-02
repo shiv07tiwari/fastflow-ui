@@ -10,7 +10,7 @@ export const useExecuteWorkflow = (workflowId: string) => {
     const [data, setData] = useState(null);
     const [isError, setIsError] = useState(null);
 
-    const executeWorkflow = useCallback(async () => {
+    const executeWorkflow = useCallback(async (runId: string) => {
         setIsLoading(true);
         setData(null);
         setIsError(null);
@@ -19,6 +19,7 @@ export const useExecuteWorkflow = (workflowId: string) => {
                 id: workflowId,
                 nodes,
                 edges,
+                run_id: runId
             }).then((res) => {
                 setData(res.data);
                 setIsLoading(false);
