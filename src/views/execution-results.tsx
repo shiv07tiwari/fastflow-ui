@@ -4,7 +4,7 @@ import { MdCheckCircle, MdExpandMore, MdExpandLess } from 'react-icons/md';
 import {orderNodesByDFS, underscoreToReadable} from "../utils";
 import { Node } from "../types";
 import {Edge} from "reactflow";
-
+import Markdown from 'react-markdown'
 
 interface WorkflowRun {
     id: string;
@@ -95,7 +95,11 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
                 <div key={key} className="mb-2">
                     {Object.entries(value).map(([k, v]) => (
                         <div key={k} className="mb-2 monospace">
-                            <strong>{k}:</strong> {String(v)}
+                            <strong>{k}:</strong>
+                            <Markdown>
+                                {String(v)}
+                            </Markdown>
+
                         </div>
                     ))}
                 </div>

@@ -7,7 +7,6 @@ import {useReactFlowHandlers} from "../hooks/useStoreHandlers";
 import {useWorkflowStore} from "../store/workflow-store";
 import {MdPlayArrow, MdMenu, MdClose, MdReplay} from 'react-icons/md';
 import GeminiNode from "../nodes/gemini-node";
-import TextNode from "../nodes/text-node";
 import AvailableNodes from "../views/available-nodes";
 import WebScrapperNode from "../nodes/web_scrapper_node";
 import ExecutionResults from "../views/execution-results";
@@ -22,10 +21,12 @@ import CompanyEnrichmentNode from "../nodes/company-enrichment";
 import UserInputNode from "../nodes/user-input";
 import SheetWriterNode from "../nodes/file_processing/sheet-writer";
 import ScorerNode from "../nodes/scoring";
+import Extractor from "../nodes/extractor";
+import CombineTextNode from "../nodes/combine-text";
 
 const nodeTypes = {
     gemini: GeminiNode,
-    combine_text: TextNode,
+    combine_text: CombineTextNode,
     web_scraper: WebScrapperNode,
     file_reader: FileReaderNode,
     resume_analysis: ResumeAnalysisNode,
@@ -35,7 +36,8 @@ const nodeTypes = {
     company_enrichment: CompanyEnrichmentNode,
     user_input: UserInputNode,
     sheet_writer: SheetWriterNode,
-    scoring: ScorerNode
+    scoring: ScorerNode,
+    extractor: Extractor,
 };
 
 interface StyledButtonProps {
@@ -75,7 +77,7 @@ const Workflow: React.FC<WorkflowProps> = () => {
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     const toggleWorkflowRun = () => setIsWorkflowRunOpen(!isWorkflowRunOpen);
     useWorkflowData(id || '');
-    const {executeWorkflow, isLoading, data} = useExecuteWorkflow(id || '');
+    const {executeWorkflow, data} = useExecuteWorkflow(id || '');
     const {onNodesChange, onEdgesChange, onConnect, onAddNode} = useReactFlowHandlers();
     const {nodes, edges} = useWorkflowStore();
     const [runId, setRunId] = useState('');

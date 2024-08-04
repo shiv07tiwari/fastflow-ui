@@ -38,7 +38,7 @@ export const useReactFlowHandlers = () => {
             const width = container ? container.clientWidth : window.innerWidth;
             const height = container ? container.clientHeight : window.innerHeight;
 
-            const nodeId = `node_${Math.random().toString(36).substr(2, 9)}`;
+            const nodeId = `${baseNode.name}-node_${Math.random().toString(36).substr(2, 9)}`;
 
             // Pre set all the internal inputs in required and available inputs
             const internalInputs = baseNode.inputs.filter((input) => input.handle_type === "internal");
