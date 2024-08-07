@@ -85,8 +85,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                                 <Form.Control
                                     disabled={true}
                                     as={inputType === "text" ? "textarea" : "input"}
-                                    placeholder={``}
-                                    value={available_inputs[key] || ''}
                                     onChange={(e) => handleInputChange(e, key)}
                                     className="border-left-0"
                                     style={inputType === "text" ? {height: '12px', resize: 'none'} : {}}
@@ -104,7 +102,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                                     value={available_inputs[key] || ''}
                                     onChange={(e) => handleInputChange(e, key)}
                                     className="border-left-0"
-                                    style={inputType === "large-text" ? {height: '120px', resize: 'none'} : {}}
+                                    style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
                                 />
                             </div>
 

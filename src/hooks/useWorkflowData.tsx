@@ -12,13 +12,14 @@ export const useWorkflowData = (workflowId: string) => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`http://localhost:8000/workflow/${workflowId}`);
-                const { nodes, edges, name } = response.data;
+                const { nodes, edges, name, latest_run_data } = response.data;
 
                 const workflowNodesArray = nodes.map((node: { node: any; id: any; }) => ({
                     ...node,
                     type: node.node,
                     data: { id: node.id },
                     name: underscoreToReadable(node.node),
+                    latest_run_data: latest_run_data
                 }));
 
                 const formattedEdges = edges.map((edge: { source: any; target: any; }) => ({

@@ -10,6 +10,17 @@ interface NodeCardProps {
 const NodeCard = ({node, size,onSelect}: NodeCardProps) => {
   if (size === 'large') {
     return (
+         // <User
+        //     className="m-1 w-100 align-items-center items-start justify-content-start"
+        //     name={node.name}
+        //     style={{height:'80px'}}
+        //     description={node.description}
+        //     avatarProps={{
+        //         src: `/node-icons/${node.id}.png`,
+        //         className: "w-16 h-16  mr-3",
+        //         isBordered: true,
+        //     }}
+        // />
       <div className="card shadow m-2 align-items-center" style={{ width: '12rem', borderRadius: '20px' }}>
           <div className="text-white text-center py-3" style={{borderRadius: '20px 20px 0 0'}}>
               <img src={`/node-icons/${node.id}.png`} alt={""} className="mr-3"
