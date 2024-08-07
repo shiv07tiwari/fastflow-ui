@@ -79,7 +79,7 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({workflow_id,  show, onHide }
             style={{
                 position: 'absolute',
                 right: show ? 0 : '-320px',
-                top: 0,
+                top: 65,
                 bottom: 0,
                 width: '320px',
                 backgroundColor: theme.background,

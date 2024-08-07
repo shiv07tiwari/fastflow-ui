@@ -1,8 +1,8 @@
 import React, {useEffect, useState, useCallback} from "react";
 import axios from "axios";
-import {Spinner, Card, Button, Dropdown} from "react-bootstrap";
+import {Spinner} from "react-bootstrap";
 import {BaseNode} from "../types";
-import {MdSearch, MdClose, MdMoreVert} from "react-icons/md";
+import {MdSearch, MdClose} from "react-icons/md";
 import NodeCard from "../common/node-card";
 
 interface AvailableNodesProps {
@@ -91,16 +91,17 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) 
           position: absolute;
           left: 0;
           top: 0;
+          margin-top: 65px;
           bottom: 0;
-          width: 100%;
-          max-width: 529px;
           transition: right 0.3s ease;
+          width: 30%;
           z-index: 5;
           display: flex;
           background-color: #FFFFFF;
           flex-direction: column;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           border-radius: 0 12px 12px 0;
+          border-color: #E0E0E0;
         }
 
         .available-nodes-header {
@@ -168,6 +169,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) 
         .nodes-flex-container {
           display: flex;
           flex-wrap: wrap;
+          justify-content: space-between;
         }
 
         .node-card {

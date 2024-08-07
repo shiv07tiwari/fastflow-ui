@@ -117,19 +117,19 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
     };
 
     return (
-        <Modal show={show} onHide={onHide} size="lg" centered>
+        <Modal show={show} onHide={onHide} size="xl" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Execution Results</Modal.Title>
+                <Modal.Title >Execution Results</Modal.Title>
             </Modal.Header>
             <Modal.Body style={{maxHeight: '70vh', overflowY: 'auto'}}>
                 {orderedNodes.map(node => (
                     <Card key={node.id} className="mb-3 shadow-sm">
                         <Card.Header
                             onClick={() => handleToggle(node.id)}
-                            style={{cursor: 'pointer', backgroundColor: '#f8f9fa'}}
+                            style={{cursor: 'pointer', backgroundColor: '#FFFFF'}}
                             className="d-flex justify-content-between align-items-center"
                         >
-                            <span className="fw-bold">{underscoreToReadable(node.node)}</span>
+                            <div className="fw-bold" style={{color:"#333F50"}}>{underscoreToReadable(node.node)}</div>
                             <div className="d-flex align-items-center">
                                 {receivedResults.has(node.id) && (
                                     <MdCheckCircle className="text-success me-2" size={20} />
