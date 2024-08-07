@@ -10,6 +10,7 @@ import {
 import LandingPage from "./pages/landing";
 // Import css file from ./App.css
 import './App.css';
+import {NextUIProvider} from "@nextui-org/react";
 
 function App() {
     const router = createBrowserRouter([
@@ -27,11 +28,14 @@ function App() {
         }
     ]);
     return (
-        <div>
-            <ReactFlowProvider>
-                <RouterProvider router={router}/>
-            </ReactFlowProvider>
-        </div>
+        <NextUIProvider>
+            <div>
+                <ReactFlowProvider>
+                    <RouterProvider router={router}/>
+                </ReactFlowProvider>
+            </div>
+        </NextUIProvider>
+
     );
 }
 

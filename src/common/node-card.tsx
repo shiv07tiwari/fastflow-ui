@@ -10,7 +10,7 @@ interface NodeCardProps {
 const NodeCard = ({node, size,onSelect}: NodeCardProps) => {
   if (size === 'large') {
     return (
-      <div className="card shadow m-2" style={{ width: '12rem', borderRadius: '20px' }}>
+      <div className="card shadow m-2 align-items-center" style={{ width: '12rem', borderRadius: '20px' }}>
           <div className="text-white text-center py-3" style={{borderRadius: '20px 20px 0 0'}}>
               <img src={`/node-icons/${node.id}.png`} alt={""} className="mr-3"
                    style={{width: "48px", height: "48px", "marginRight": '8px'}}/>

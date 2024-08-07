@@ -1,10 +1,20 @@
 import React, {useState, useEffect} from 'react';
-import { Modal, Button, Card, Spinner } from 'react-bootstrap';
-import { MdCheckCircle, MdExpandMore, MdExpandLess } from 'react-icons/md';
+import {Modal, Button, Card} from 'react-bootstrap';
+import {MdCheckCircle, MdExpandMore, MdExpandLess} from 'react-icons/md';
 import {orderNodesByDFS, underscoreToReadable} from "../utils";
-import { Node } from "../types";
+import {Node} from "../types";
 import {Edge} from "reactflow";
-import Markdown from 'react-markdown'
+import {
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    getKeyValue,
+    Spinner,
+} from "@nextui-org/react";
+import Markdown from "react-markdown";
 
 interface WorkflowRun {
     id: string;
@@ -26,14 +36,52 @@ interface ExecutionResultsProps {
     edges: Edge[];
 }
 
+
+interface Props {
+    value: Record<string, any>[]; // specify a more precise type according to your data structure
+}
+
+const KeyValueTable: React.FC<Props> = ({value}) => {
+    if (typeof value !== 'object' || value === null) {
+        // Optionally handle non-object types or return null or some fallback UI.
+        return null;
+    }
+
+    const tableHeaders = Object.keys(value[0]);
+    console.log("Table Headers: ", value)
+    // Add all table headers to the columns array
+    const columns = tableHeaders.map((header) => ({key: header, label: underscoreToReadable(header)}));
+    const data = value.map((row: any, index: any) => (
+        {
+            key: index,
+            ...row
+        }
+    ));
+
+    return (
+        <Table aria-label="Example table with dynamic content" >
+            <TableHeader columns={columns}>
+                {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+            </TableHeader>
+            <TableBody items={data}>
+                {(item) => (
+                    <TableRow key={item.key}>
+                        {(columnKey) => <TableCell><Markdown>{getKeyValue(item, columnKey)}</Markdown></TableCell>}
+                    </TableRow>
+                )}
+            </TableBody>
+        </Table>
+    );
+};
+
 const ExecutionResults: React.FC<ExecutionResultsProps> = ({
-    show,
-    onHide,
-    runId,
-    finalData,
-    nodes,
-    edges,
-}) => {
+                                                               show,
+                                                               onHide,
+                                                               runId,
+                                                               finalData,
+                                                               nodes,
+                                                               edges,
+                                                           }) => {
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [receivedResults, setReceivedResults] = useState<Map<string, Node>>(new Map());
 
@@ -82,44 +130,14 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
         );
     };
 
-    const renderResponseItem = (key: string, value: any) => {
-        if (Array.isArray(value)) {
-            return (
-                <div key={key} className="mb-2">
-                    <strong>{key}:</strong> {value.join(', ')}
-                </div>
-            );
-        }
-        if (typeof value === 'object') {
-            return (
-                <div key={key} className="mb-2">
-                    {Object.entries(value).map(([k, v]) => (
-                        <div key={k} className="mb-2 monospace">
-                            <strong>{k}:</strong>
-                            <Markdown>
-                                {String(v)}
-                            </Markdown>
-
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-        return (
-            <div key={key} className="mb-2 monospace">
-                {String(value)}
-            </div>
-        );
-    };
-
-    const renderResponse = (response: Record<string, any>) => {
-        return Object.entries(response).map(([key, value]) => renderResponseItem(key, value));
+    const renderResponse = (response: Record<string, any>[]) => {
+        return <KeyValueTable value={response}/>
     };
 
     return (
         <Modal show={show} onHide={onHide} size="xl" centered>
             <Modal.Header closeButton>
-                <Modal.Title >Execution Results</Modal.Title>
+                <Modal.Title>Execution Results</Modal.Title>
             </Modal.Header>
             <Modal.Body style={{maxHeight: '70vh', overflowY: 'auto'}}>
                 {orderedNodes.map(node => (
@@ -129,10 +147,10 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
                             style={{cursor: 'pointer', backgroundColor: '#FFFFF'}}
                             className="d-flex justify-content-between align-items-center"
                         >
-                            <div className="fw-bold" style={{color:"#333F50"}}>{underscoreToReadable(node.node)}</div>
+                            <div className="fw-bold" style={{color: "#333F50"}}>{underscoreToReadable(node.node)}</div>
                             <div className="d-flex align-items-center">
                                 {receivedResults.has(node.id) && (
-                                    <MdCheckCircle className="text-success me-2" size={20} />
+                                    <MdCheckCircle className="text-success me-2" size={20}/>
                                 )}
                                 {receivedResults.has(node.id) ? (
                                     <Button
@@ -142,24 +160,22 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
                                     >
                                         {expandedIds.includes(node.id) ? (
                                             <>
-                                                <MdExpandLess className="me-1" /> Collapse
+                                                <MdExpandLess className="me-1"/> Collapse
                                             </>
                                         ) : (
                                             <>
-                                                <MdExpandMore className="me-1" /> Expand
+                                                <MdExpandMore className="me-1"/> Expand
                                             </>
                                         )}
                                     </Button>
                                 ) : (
-                                    <Spinner animation="border" role="status" size="sm">
-                                        <span className="visually-hidden">Loading...</span>
-                                    </Spinner>
+                                    <Spinner />
                                 )}
                             </div>
                         </Card.Header>
                         {receivedResults.has(node.id) && expandedIds.includes(node.id) && (
                             <Card.Body>
-                                {renderResponse(receivedResults.get(node.id)?.outputs || {})}
+                                {renderResponse(receivedResults.get(node.id)?.outputs || [])}
                             </Card.Body>
                         )}
                     </Card>

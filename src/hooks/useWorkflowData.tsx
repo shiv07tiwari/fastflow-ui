@@ -33,5 +33,5 @@ export const useWorkflowData = (workflowId: string) => {
         };
 
         fetchData();
-    }, [workflowId, setNodes, setEdges]);
+    }, [workflowId, setNodes, setEdges, setName]);
 };

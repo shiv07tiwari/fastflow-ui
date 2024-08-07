@@ -13,3 +13,7 @@ code {
 .monospace {
   font-family: monospace;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -26,6 +26,8 @@ import Extractor from "../nodes/extractor";
 import CombineTextNode from "../nodes/combine-text";
 import HumanApproval from "../nodes/human_approval";
 import {useUpdateWorkflow} from "../hooks/useUpdateWorkflow";
+import Filter from "../nodes/filter";
+import {Button} from "@nextui-org/react";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -42,6 +44,7 @@ const nodeTypes = {
     scoring: ScorerNode,
     extractor: Extractor,
     human_approval: HumanApproval,
+    filter: Filter,
 };
 
 interface HeaderButtonProps {
@@ -51,14 +54,10 @@ interface HeaderButtonProps {
 }
 
 const HeaderButton: React.FC<HeaderButtonProps> = ({onClick, icon, label}) => (
-    <button
-        onClick={onClick}
-        className="btn btn-outline-dark d-flex align-items-center"
-        title={label}
-    >
+    <Button onClick={onClick} color="primary" variant="flat">
         {icon}
-        <span className="ms-2 d-none d-md-inline">{label}</span>
-    </button>
+        {label}
+      </Button>
 );
 
 const Header: React.FC<{
