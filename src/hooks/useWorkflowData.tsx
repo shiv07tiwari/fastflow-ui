@@ -6,7 +6,7 @@ import {useWorkflowStore} from "../store/workflow-store";
 
 export const useWorkflowData = (workflowId: string) => {
     const { setNodes, setEdges } = useReactFlow();
-    const {setName} = useWorkflowStore();
+    const {setName, setLatestRunData} = useWorkflowStore();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,7 +19,6 @@ export const useWorkflowData = (workflowId: string) => {
                     type: node.node,
                     data: { id: node.id },
                     name: underscoreToReadable(node.node),
-                    latest_run_data: latest_run_data
                 }));
 
                 const formattedEdges = edges.map((edge: { source: any; target: any; }) => ({
@@ -28,6 +27,7 @@ export const useWorkflowData = (workflowId: string) => {
                 setNodes(workflowNodesArray);
                 setEdges(formattedEdges);
                 setName(name);
+                setLatestRunData(latest_run_data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }

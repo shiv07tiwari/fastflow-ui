@@ -9,6 +9,7 @@ interface WorkflowState {
     edges: any[];
     name?: string;
     latest_run_data: any;
+    setLatestRunData: (latest_run_data: any) => void;
     variables: any[];
     setVariables: (variables: any[]) => void;
     baseNodes: BaseNode[];
@@ -29,6 +30,9 @@ export const useWorkflowStore = create(devtools<WorkflowState>((set, get) => ({ 
     baseNodes: [],
     variables: [],
     latest_run_data: {},
+    setLatestRunData: (latest_run_data: any) => {
+        set({latest_run_data})
+    },
     setVariables: (variables: any[]) => {
         set({variables})
     },

@@ -44,7 +44,8 @@ interface Props {
     value: Record<string, any>[]; // specify a more precise type according to your data structure
 }
 
-const KeyValueTable: React.FC<Props> = ({value}) => {
+export const ResultsTable: React.FC<Props> = ({value}) => {
+    console.log("Value: ", value)
     if (typeof value !== 'object' || value === null) {
         // Optionally handle non-object types or return null or some fallback UI.
         return null;
@@ -156,7 +157,7 @@ const KeyValueTable: React.FC<Props> = ({value}) => {
         };
 
         const renderResponse = (response: Record<string, any>[]) => {
-            return <KeyValueTable value={response}/>
+            return <ResultsTable value={response}/>
         };
 
         const onRetryClicked = (nodeId: string) => {

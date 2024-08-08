@@ -67,7 +67,10 @@ const Header: React.FC<{
     onZoomIn: () => void;
     onZoomOut: () => void;
     onSave: () => void;
-}> = ({onAddNode, onExecuteWorkflow, onToggleWorkflowRun, onZoomIn, onZoomOut, onSave}) => {
+    latestRunStatus?: string;
+    approverNode?: string;
+    onExecuteApproverWorkflow: (nodeId: string) => void;
+}> = ({onAddNode, onExecuteApproverWorkflow, onExecuteWorkflow, onToggleWorkflowRun, onZoomIn, onZoomOut, onSave, latestRunStatus, approverNode}) => {
     const [isEditing, setIsEditing] = useState(false);
     const {setName, name} = useWorkflowStore();
     const handleEditClick = () => {
@@ -191,10 +194,13 @@ const Workflow: React.FC = () => {
             <Header
                 onAddNode={toggleMenu}
                 onExecuteWorkflow={triggerWorkflow}
+                onExecuteApproverWorkflow={triggerRunFromResultsPage}
                 onToggleWorkflowRun={toggleWorkflowRun}
                 onZoomIn={handleZoomIn}
                 onZoomOut={handleZoomOut}
                 onSave={() => updateWorkflow()}
+                latestRunStatus={latestRunStatus}
+                approverNode={approverNode}
             />
             <div className="flex-grow-1">
                 {isMenuOpen && (
