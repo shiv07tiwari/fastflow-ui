@@ -7,6 +7,7 @@ import {useReactFlowHandlers} from "../hooks/useStoreHandlers";
 import {useWorkflowStore} from "../store/workflow-store";
 import {MdPlayArrow, MdMenu, MdClose, MdReplay} from 'react-icons/md';
 import GeminiNode from "../nodes/gemini-node";
+import GeminiRAGNode from "../nodes/gemini-rag-node";
 import AvailableNodes from "../views/available-nodes";
 import WebScrapperNode from "../nodes/web_scrapper_node";
 import ExecutionResults from "../views/execution-results";
@@ -23,6 +24,7 @@ import SheetWriterNode from "../nodes/file_processing/sheet-writer";
 import ScorerNode from "../nodes/scoring";
 import Extractor from "../nodes/extractor";
 import CombineTextNode from "../nodes/combine-text";
+import YoutubeComments from "../nodes/youtube-comments";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -38,6 +40,8 @@ const nodeTypes = {
     sheet_writer: SheetWriterNode,
     scoring: ScorerNode,
     extractor: Extractor,
+    yt_comments: YoutubeComments,
+    gemini_rag: GeminiRAGNode,
 };
 
 interface StyledButtonProps {
