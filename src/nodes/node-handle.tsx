@@ -10,8 +10,8 @@ interface NodeHandleProps {
 class NodeHandle extends React.Component<NodeHandleProps> {
     render() {
         const {handles, type} = this.props;
-        const centerOffset = 10; // Base offset for centering
-        const spacing = 60; // Space between each handle in pixels
+        const centerOffset = 2; // Base offset for centering
+        const spacing = 5; // Space between each handle in pixels
 
         // Create an array of handles with their respective offsets
         const handleOffsets = handles.map((handle, index) => {

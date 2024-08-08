@@ -7,7 +7,12 @@ import { devtools } from 'zustand/middleware'
 interface WorkflowState {
     nodes: Node[];
     edges: any[];
+    name?: string;
+    latest_run_data: any;
+    variables: any[];
+    setVariables: (variables: any[]) => void;
     baseNodes: BaseNode[];
+    setName: (name: string) => void;
     setNodes: (nodes: Node[]) => void;
     setEdges: (edges: Edge[]) => void;
     setBaseNodes: (nodes: BaseNode[]) => void;
@@ -22,9 +27,18 @@ interface WorkflowState {
 
 export const useWorkflowStore = create(devtools<WorkflowState>((set, get) => ({    nodes: [],
     baseNodes: [],
+    variables: [],
+    latest_run_data: {},
+    setVariables: (variables: any[]) => {
+        set({variables})
+    },
     edges: [],
+    name: '',
     setNodes: (nodes: Node[]) => {
         set({nodes})
+    },
+    setName: (name: string) => {
+        set({name})
     },
     setEdges: (edges: Edge[]) => set({edges}),
     setBaseNodes: (baseNodes: BaseNode[]) => set({baseNodes}),

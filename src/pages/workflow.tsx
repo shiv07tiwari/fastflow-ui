@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
-import ReactFlow, {Controls, Background, MiniMap} from 'reactflow';
+import React, {useState, useCallback, useEffect} from 'react';
+import ReactFlow, {Controls, Background, MiniMap, useReactFlow} from 'reactflow';
 import 'reactflow/dist/style.css';
 import {useWorkflowData} from "../hooks/useWorkflowData";
 import {useExecuteWorkflow} from "../hooks/useExecuteWorkflow";
 import {useReactFlowHandlers} from "../hooks/useStoreHandlers";
 import {useWorkflowStore} from "../store/workflow-store";
-import {MdPlayArrow, MdMenu, MdClose, MdReplay} from 'react-icons/md';
+import {MdPlayArrow, MdReplay, MdAdd, MdCheck, MdEdit} from 'react-icons/md';
+import toast, {Toaster} from 'react-hot-toast';
 import GeminiNode from "../nodes/gemini-node";
 import GeminiRAGNode from "../nodes/gemini-rag-node";
 import AvailableNodes from "../views/available-nodes";
@@ -25,6 +26,10 @@ import ScorerNode from "../nodes/scoring";
 import Extractor from "../nodes/extractor";
 import CombineTextNode from "../nodes/combine-text";
 import YoutubeComments from "../nodes/youtube-comments";
+import HumanApproval from "../nodes/human_approval";
+import {useUpdateWorkflow} from "../hooks/useUpdateWorkflow";
+import Filter from "../nodes/filter";
+import {Button, Input} from "@nextui-org/react";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -42,96 +47,180 @@ const nodeTypes = {
     extractor: Extractor,
     yt_comments: YoutubeComments,
     gemini_rag: GeminiRAGNode,
+    human_approval: HumanApproval,
+    filter: Filter,
 };
 
-interface StyledButtonProps {
+interface HeaderButtonProps {
     onClick: () => void;
-    children: React.ReactNode;
-    icon?: React.ReactNode;
-    variant?: 'primary' | 'secondary';
+    icon: React.ReactNode;
+    label: string;
 }
 
-const StyledButton: React.FC<StyledButtonProps> = ({onClick, children, icon, variant = 'primary'}) => (
-    <button
-        onClick={onClick}
-        className={`btn btn-${variant} me-2 d-flex align-items-center cursor-pointer`}
-        style={{
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            borderRadius: '4px',
-            fontWeight: 'bold',
-            padding: '0.5rem 1rem',
-            transition: 'all 0.3s ease',
-        }}
-    >
-        {icon && <span className="me-2">{icon}</span>}
-        {children}
-    </button>
+const HeaderButton: React.FC<HeaderButtonProps> = ({onClick, icon, label}) => (
+    <Button onClick={onClick} color="primary" variant="flat">
+        {icon}
+        {label}
+    </Button>
 );
 
-interface WorkflowProps {
-}
+const Header: React.FC<{
+    onAddNode: () => void;
+    onExecuteWorkflow: () => void;
+    onToggleWorkflowRun: () => void;
+    onZoomIn: () => void;
+    onZoomOut: () => void;
+    onSave: () => void;
+}> = ({onAddNode, onExecuteWorkflow, onToggleWorkflowRun, onZoomIn, onZoomOut, onSave}) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const {setName, name} = useWorkflowStore();
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
 
-const Workflow: React.FC<WorkflowProps> = () => {
-    const params = useParams();
-    const {id} = params;
+    const handleSaveClick = () => {
+        setIsEditing(false);
+        onSave();
+    };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value);
+    };
+
+    return (
+        <header className="shadow-sm py-3 px-4" style={{backgroundColor: "#FFFFFF"}}>
+            <div className="container-fluid">
+                <div className="d-flex justify-content-between align-items-center">
+                    <HeaderButton onClick={onAddNode} icon={<MdAdd size={20}/>} label="Add Node"/>
+                    <div className="d-flex align-items-center">
+                        {isEditing ? (
+                            <input
+                                onClick={handleEditClick}
+                                type="text"
+                                onBlur={handleSaveClick}
+                                value={name}
+                                onChange={handleInputChange}
+                                className="form-control h4 mb-0 me-2"
+                                style={{width: '150px'}}
+                                autoFocus
+                            />
+                        ) : (
+                            <button onClick={isEditing ? handleSaveClick : handleEditClick}
+                                    className="btn btn-sm">
+                                <h5 className=" mb-0 me-2">{name}</h5>
+                            </button>
+
+                        )}
+                    </div>
+                    <div className="d-flex gap-2">
+                        <HeaderButton onClick={onExecuteWorkflow} icon={<MdPlayArrow size={20}/>} label="Execute"/>
+                        <HeaderButton onClick={onToggleWorkflowRun} icon={<MdReplay size={20}/>} label="Previous Runs"/>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+};
+
+const Workflow: React.FC = () => {
+    const {id} = useParams<{ id: string }>();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isResultsOpen, setIsResultsOpen] = useState(false);
     const [isWorkflowRunOpen, setIsWorkflowRunOpen] = useState(false);
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const toggleWorkflowRun = () => setIsWorkflowRunOpen(!isWorkflowRunOpen);
+
     useWorkflowData(id || '');
     const {executeWorkflow, data} = useExecuteWorkflow(id || '');
+    const {updateWorkflow} = useUpdateWorkflow(id || '');
     const {onNodesChange, onEdgesChange, onConnect, onAddNode} = useReactFlowHandlers();
-    const {nodes, edges} = useWorkflowStore();
-    const [runId, setRunId] = useState('');
+    const {nodes, edges, latest_run_data} = useWorkflowStore();
+
+    const latestRunStatus = latest_run_data["status"];
+    const latestRunId = latest_run_data["id"];
+    const approverNode = latest_run_data["approve_node"];
+    const [runId, setRunId] = useState(latestRunId);
+
+    const {zoomIn, zoomOut} = useReactFlow();
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const toggleWorkflowRun = () => setIsWorkflowRunOpen(!isWorkflowRunOpen);
 
     const triggerWorkflow = () => {
         setIsResultsOpen(true);
-        // Generate a random Run ID
-        const runId = Math.random().toString(36);
-        setRunId(runId);
-        executeWorkflow(runId);
-    }
+        const newRunId = Math.random().toString(36).substring(7);
+        setRunId(newRunId);
+        executeWorkflow(newRunId, undefined);
+    };
 
+    const triggerRunFromResultsPage = (nodeId: string) => {
+        setIsResultsOpen(true);
+        executeWorkflow(runId, nodeId);
+    };
+
+    const handleZoomIn = useCallback(() => {
+        zoomIn();
+    }, [zoomIn]);
+
+    const handleZoomOut = useCallback(() => {
+        zoomOut();
+    }, [zoomOut]);
+
+    const handleKeyDown = useCallback(
+        (event: KeyboardEvent) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === 's') {
+                toast.promise(
+                    updateWorkflow(),
+                    {
+                        loading: 'Saving...',
+                        success: <b>Workflow Saved! 🎉</b>,
+                        error: <b>Failed to save workflow</b>,
+                    }
+                );
+                event.preventDefault();
+            }
+        },
+        [updateWorkflow]
+    );
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleKeyDown]);
+
+
+    // @ts-ignore
     return (
-        <div className="workflow-container" style={{width: '100vw', height: '100vh', position: 'relative'}}>
-            <div className="d-flex w-100 justify-content-between px-3 py-3 border-2 p-4">
-                <StyledButton onClick={toggleMenu}
-                              icon={isMenuOpen ? <MdClose size={18}/> : <MdMenu size={18}/>}>
-                    {'Add Node'}
-                </StyledButton>
-                <StyledButton onClick={triggerWorkflow} icon={<MdPlayArrow size={18}/>}>
-                    Execute Workflow
-                </StyledButton>
-                <StyledButton onClick={toggleWorkflowRun} icon={<MdReplay size={18}/>}>
-                    See Previous Runs
-                </StyledButton>
-            </div>
-            <div className="content" style={{display: 'flex', height: 'calc(100vh - 60px)'}}>
+        <div className="workflow-container d-flex flex-column vh-100">
+            <Header
+                onAddNode={toggleMenu}
+                onExecuteWorkflow={triggerWorkflow}
+                onToggleWorkflowRun={toggleWorkflowRun}
+                onZoomIn={handleZoomIn}
+                onZoomOut={handleZoomOut}
+                onSave={() => updateWorkflow()}
+            />
+            <div className="flex-grow-1">
                 {isMenuOpen && (
                     <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
                 )}
-                <div className="react-flow-wrapper" style={{flexGrow: 1}}>
-                    <ReactFlow
-                        nodes={nodes}
-                        edges={edges}
-                        nodeTypes={nodeTypes}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                        onConnect={onConnect}
-                    >
-                        <Controls/>
-                        <MiniMap/>
-                        <Background/>
-                    </ReactFlow>
-                </div>
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    nodeTypes={nodeTypes}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    fitView
+                >
+                    <Controls/>
+                    <MiniMap/>
+                    <Background/>
+                </ReactFlow>
             </div>
-            {
-                isWorkflowRunOpen &&
+            {isWorkflowRunOpen && (
                 <WorkflowRuns workflow_id={id || ''} show={isWorkflowRunOpen} onHide={toggleWorkflowRun}/>
-            }
-
+            )}
             {isResultsOpen && (
                 <ExecutionResults
                     show={isResultsOpen}
@@ -140,8 +229,10 @@ const Workflow: React.FC<WorkflowProps> = () => {
                     finalData={data || undefined}
                     nodes={nodes}
                     edges={edges}
+                    onRetry={triggerRunFromResultsPage}
                 />
             )}
+            <Toaster/>
         </div>
     );
 };

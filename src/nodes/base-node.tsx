@@ -35,7 +35,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         return null;
     }
 
-    const { external_inputs, output_handles, internal_inputs, common_inputs } = node;
+    const {external_inputs, output_handles, internal_inputs, common_inputs} = node;
 
     const connectedExternalInputHandles = edges.filter(edge => edge.target === data.id).map(edge => edge.targetHandle);
     const inputHandles = [...external_inputs, ...common_inputs].map(input => input.key);
@@ -49,12 +49,12 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     });
 
     const renderInput = (input: InputProps) => {
-        const {key, inputType, inputLabel} = input;
+        const {key, inputType, inputLabel, enabled} = input;
         const {available_inputs} = node;
         if (inputType === 'file') {
             return (
                 <>
-                    <input disabled={!input.enabled} type="file" onChange={(e) => {
+                    <input disabled={!enabled} type="file" onChange={(e) => {
                         handleInputChange(e, key);
                     }} className="form-control"/>
                     {
@@ -73,46 +73,73 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         } else {
             return (
                 <InputGroup>
-                    <Form.Control
-                        disabled={!input.enabled}
-                        as={inputType === "text" ? "textarea" : "input"}
-                        placeholder={`Enter your ${inputLabel}`}
-                        value={available_inputs[key] || ''}
-                        onChange={(e) => handleInputChange(e, key)}
-                        className="border-left-0"
-                        // style={inputType === "text" ? {height: '60px', resize: 'none'} : {}}
-                    />
+                    {
+                        !enabled && (
+                            // <div className="d-flex flex-row mt-3 align-items-center">
+                            //     <img src={`/assets/done.png`} alt={`${title} Icon`} className="mr-3"
+                            //          style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
+                            //     <div className="fs-5 ms-2">{`${inputLabel} connected!`}</div>
+                            // </div>
+                            <div className="d-flex flex-column w-100 mt-3">
+                                <div className="fw-bold mb-3">{`${input.inputLabel} `}</div>
+                                <Form.Control
+                                    disabled={true}
+                                    as={inputType === "text" ? "textarea" : "input"}
+                                    onChange={(e) => handleInputChange(e, key)}
+                                    className="border-left-0"
+                                    style={inputType === "text" ? {height: '12px', resize: 'none'} : {}}
+                                />
+                            </div>
+                        )
+                    }
+                    {
+                        enabled && (
+                            <div className="d-flex flex-column w-100 mt-3">
+                                <div className="fw-bold mb-2">{input.inputLabel}</div>
+                                <Form.Control
+                                    as={inputType === "text" ? "textarea" : "input"}
+                                    placeholder={`Enter your ${inputLabel}`}
+                                    value={available_inputs[key] || ''}
+                                    onChange={(e) => handleInputChange(e, key)}
+                                    className="border-left-0"
+                                    style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
+                                />
+                            </div>
+
+                        )
+                    }
                 </InputGroup>
             );
         }
     };
 
     return (
-        <Card className="shadow-sm bg-light" style={{width: "320px", borderRadius: "12px"}}>
-            <NodeHandle handles={inputHandles} type="target"/>
-            <Card.Header className="d-flex align-items-center bg-main text-white py-3">
-                <img src={`/node-icons/${node.node}.png`} alt={`${title} Icon`} className="mr-3"
-                     style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
-                <span className="font-weight-bold fs-5">{node.name}</span>
-            </Card.Header>
-            <Card.Body className="bg-light">
-                <Form>
-                    <Form.Group className="mb-3">
-                        {
-                            internalInputs.map((input, index) => (
-                                <>
-                                    <Form.Label key={index}>{input.inputLabel}</Form.Label>
-                                    {renderInput(input)}
-                                    <div className="mb-3" />
-                                </>
+        <>
+            <Card className="shadow-sm" style={{width: "320px", borderRadius: "12px"}}>
+                <NodeHandle handles={inputHandles} type="target"/>
+                <Card.Header className="d-flex align-items-center text-white py-3" style={{backgroundColor: "#8AAAE5"}}>
+                    <img src={`/node-icons/${node.node}.png`} alt={`${title} Icon`} className="mr-3"
+                         style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
+                    <span className="font-weight-bold fs-5" style={{color: "black"}}>{node.name}</span>
+                </Card.Header>
+                <Card.Body className="">
+                    <Form>
+                        <Form.Group className="mb-3">
+                            {
+                                internalInputs.map((input, index) => (
+                                    <>
+                                        {renderInput(input)}
+                                        <div className="mb-3"/>
+                                    </>
 
-                            ))
-                        }
-                    </Form.Group>
-                </Form>
-            </Card.Body>
-            <NodeHandle handles={output_handles} type="source"/>
-        </Card>
+                                ))
+                            }
+                        </Form.Group>
+                    </Form>
+                </Card.Body>
+                <NodeHandle handles={output_handles} type="source"/>
+            </Card>
+        </>
     );
 };
 
