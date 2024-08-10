@@ -7,7 +7,11 @@ module.exports = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+     extend: {
+      height: {
+        '16': '80px', // Custom value for h-16
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],

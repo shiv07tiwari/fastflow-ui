@@ -9,9 +9,20 @@ import {
 } from "react-router-dom"
 import LandingPage from "./pages/landing";
 // Import css file from ./App.css
-import './App.css';
-import {NextUIProvider} from "@nextui-org/react";
-import {GoogleOAuthProvider} from "@react-oauth/google";
+import {Button, NextUIProvider} from "@nextui-org/react";
+import {GoogleLogin, GoogleOAuthProvider, useGoogleLogin} from "@react-oauth/google";
+
+function GoogleLoginButton() {
+
+    const login = useGoogleLogin({
+        onSuccess: tokenResponse => console.log(tokenResponse),
+        scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/drive',
+        flow: 'auth-code',
+    });
+
+    return (<Button onClick={() => login()}>Sign in with Google 🚀</Button>);
+}
+
 
 function App() {
     const router = createBrowserRouter([
@@ -26,6 +37,10 @@ function App() {
         {
             path: "/test",
             element: <></>,
+        },
+        {
+            path:"/auth",
+            element: <GoogleLoginButton />
         }
     ]);
     return (

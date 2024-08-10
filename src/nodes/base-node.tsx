@@ -1,10 +1,12 @@
 import React from 'react';
-import {Card, Form, InputGroup, Spinner} from "react-bootstrap";
+import {Form, Spinner} from "react-bootstrap";
 import {useWorkflowStore} from "../store/workflow-store";
 import {BaseNodeInput, Node} from "../types";
 import NodeHandle from "./node-handle";
 import {UploadStatus} from "../hooks/useHandleFileUpload";
 import {underscoreToReadable} from "../utils";
+import {Input} from "antd";
+import {Card, CardBody, CardHeader} from '@nextui-org/react';
 
 interface InputProps {
     key: string;
@@ -13,10 +15,12 @@ interface InputProps {
     enabled?: boolean;
 }
 
+const { TextArea } = Input;
+
 export interface BaseNodeProps {
     title: string;
     data: Node;
-    handleInputChange: (e: React.ChangeEvent<any>, key: string) => void;
+    handleInputChange: (e: React.ChangeEvent<any>, key: string, inputType?: string) => void;
     status?: UploadStatus;
 }
 
@@ -50,12 +54,13 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
     const renderInput = (input: InputProps) => {
         const {key, inputType, inputLabel, enabled} = input;
+        const height = inputType === "prompt" ? "240px" : "60px";
         const {available_inputs} = node;
         if (inputType === 'file') {
             return (
                 <>
                     <input disabled={!enabled} type="file" onChange={(e) => {
-                        handleInputChange(e, key);
+                        handleInputChange(e, key, inputType);
                     }} className="form-control"/>
                     {
                         status === 'uploading' && (
@@ -72,60 +77,51 @@ const BaseNode: React.FC<BaseNodeProps> = ({
             )
         } else {
             return (
-                <InputGroup>
-                    {
+                <>
+                 {
                         !enabled && (
-                            // <div className="d-flex flex-row mt-3 align-items-center">
-                            //     <img src={`/assets/done.png`} alt={`${title} Icon`} className="mr-3"
-                            //          style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
-                            //     <div className="fs-5 ms-2">{`${inputLabel} connected!`}</div>
-                            // </div>
                             <div className="d-flex flex-column w-100 mt-3">
-                                <div className="fw-bold mb-3">{`${input.inputLabel} `}</div>
-                                <Form.Control
-                                    disabled={true}
-                                    as={inputType === "text" ? "textarea" : "input"}
-                                    onChange={(e) => handleInputChange(e, key)}
-                                    className="border-left-0"
-                                    style={inputType === "text" ? {height: '12px', resize: 'none'} : {}}
+                                <TextArea
+                                    disabled
+                                    showCount
+                                    onChange={(e) => handleInputChange(e, key, inputType)}
+                                    placeholder={`Enter your ${inputLabel}`}
+                                    value={available_inputs[key] || ''}
+                                    style={{height: height, resize: 'none', marginBottom: '8px'}}
+                                    variant='outlined'
                                 />
                             </div>
                         )
                     }
                     {
                         enabled && (
-                            <div className="d-flex flex-column w-100 mt-3">
-                                <div className="fw-bold mb-2">{input.inputLabel}</div>
-                                <Form.Control
-                                    as={inputType === "text" ? "textarea" : "input"}
+                            <TextArea
+                                    showCount
+                                    onChange={(e) => handleInputChange(e, key, inputType)}
                                     placeholder={`Enter your ${inputLabel}`}
                                     value={available_inputs[key] || ''}
-                                    onChange={(e) => handleInputChange(e, key)}
-                                    className="border-left-0"
-                                    style={inputType === "text" ? {height: '120px', resize: 'none'} : {}}
+                                    style={{height: height, resize: 'none', marginBottom: '8px'}}
+                                    variant='outlined'
                                 />
-                            </div>
 
                         )
                     }
-                </InputGroup>
+                </>
             );
         }
     };
 
     return (
         <>
-            <Card className="shadow-sm" style={{width: "320px", borderRadius: "12px"}}>
+            <Card shadow="sm" className="py-1" style={{width: "320px"}}>
                 <NodeHandle handles={inputHandles} type="target"/>
-                <Card.Header className="d-flex align-items-center text-white py-3" style={{backgroundColor: "#8AAAE5"}}>
+                <div className="d-flex align-items-center text-white p-3" style={{backgroundColor: "#8AAAE5"}}>
                     <img src={`/node-icons/${node.node}.png`} alt={`${title} Icon`} className="mr-3"
                          style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
                     <span className="font-weight-bold fs-5" style={{color: "black"}}>{node.name}</span>
-                </Card.Header>
-                <Card.Body className="">
-                    <Form>
-                        <Form.Group className="mb-3">
-                            {
+                </div>
+                <CardBody className="">
+                    {
                                 internalInputs.map((input, index) => (
                                     <>
                                         {renderInput(input)}
@@ -134,9 +130,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
                                 ))
                             }
-                        </Form.Group>
-                    </Form>
-                </Card.Body>
+                </CardBody>
                 <NodeHandle handles={output_handles} type="source"/>
             </Card>
         </>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Node} from "../types";
-import { Card } from 'react-bootstrap';
-import { MdClose, MdExpandMore, MdExpandLess } from 'react-icons/md';
+import { MdClose } from 'react-icons/md';
 import {timestampToHumanReadable, underscoreToReadable} from "../utils";
-import {Accordion, AccordionItem, Avatar, Button, Spinner} from "@nextui-org/react";
+import {Accordion, AccordionItem, Button, Spinner} from "@nextui-org/react";
 import {ResultsTable} from "./execution-results";
 
 interface WorkflowRun {

@@ -5,7 +5,7 @@ import {useWorkflowData} from "../hooks/useWorkflowData";
 import {useExecuteWorkflow} from "../hooks/useExecuteWorkflow";
 import {useReactFlowHandlers} from "../hooks/useStoreHandlers";
 import {useWorkflowStore} from "../store/workflow-store";
-import {MdPlayArrow, MdReplay, MdAdd, MdCheck, MdEdit} from 'react-icons/md';
+import {MdPlayArrow, MdReplay, MdAdd} from 'react-icons/md';
 import toast, {Toaster} from 'react-hot-toast';
 import GeminiNode from "../nodes/gemini-node";
 import AvailableNodes from "../views/available-nodes";
@@ -27,7 +27,11 @@ import CombineTextNode from "../nodes/combine-text";
 import HumanApproval from "../nodes/human_approval";
 import {useUpdateWorkflow} from "../hooks/useUpdateWorkflow";
 import Filter from "../nodes/filter";
-import {Button, Input} from "@nextui-org/react";
+import {Button} from "@nextui-org/react";
+import GeminiImageNode from "../nodes/gemini_image";
+import GoogleSheetWriterNode from "../nodes/google/google-sheet-writer";
+import InvoiceProcessorNode from "../nodes/invoice_processor";
+import GmailDraftNode from "../nodes/google/email-draft";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -45,6 +49,10 @@ const nodeTypes = {
     extractor: Extractor,
     human_approval: HumanApproval,
     filter: Filter,
+    gemini_image: GeminiImageNode,
+    google_sheet_writer: GoogleSheetWriterNode,
+    invoice_processor: InvoiceProcessorNode,
+    email_draft: GmailDraftNode
 };
 
 interface HeaderButtonProps {
