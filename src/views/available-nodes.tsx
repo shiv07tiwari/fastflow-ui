@@ -91,7 +91,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) 
           position: absolute;
           left: 0;
           top: 0;
-          margin-top: 65px;
+          margin-top: 90px;
           bottom: 0;
           transition: right 0.3s ease;
           width: 470px;

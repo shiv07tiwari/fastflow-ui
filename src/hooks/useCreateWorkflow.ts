@@ -1,11 +1,10 @@
-import {useWorkflowStore} from "../store/workflow-store";
 import {useCallback, useState} from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
-export const useUpdateWorkflow = (workflowId: string) => {
-    const { nodes, edges, name } = useWorkflowStore();
-
+export const useCreateWorkflow = (userEmail: string) => {
     // States to track loading, data, and error
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState(null);
     const [isError, setIsError] = useState(null);
@@ -14,13 +13,13 @@ export const useUpdateWorkflow = (workflowId: string) => {
         setIsLoading(true);
         setData(null);
         setIsError(null);
-        await axios.put(`http://localhost:8000/workflow`, {
-                id: workflowId,
-                nodes,
-                edges,
-                name
-            })
-    }, [workflowId, nodes, edges, name]);
+        await axios.post(`http://localhost:8000/workflow`, {
+                owner: userEmail
+            }).then((response) => {
+                const workflowId = response.data.workflow_id;
+                navigate(`/workflow/${workflowId}`);
+        })
+    }, [navigate, userEmail]);
 
     return { updateWorkflow, isLoading, data, isError };
 };

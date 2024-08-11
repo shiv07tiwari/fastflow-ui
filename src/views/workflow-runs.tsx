@@ -64,7 +64,7 @@ export const AIIcon = (props: any) => (
 );
 
 // @ts-ignore
-const ResultAccordion = ({runs}) => {
+export const ResultAccordion = ({runs}) => {
     const itemClasses = {
         base: "py-0 w-full",
         title: "font-normal text-medium",

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Container, Row, Col, Button, Form, FormGroup, FormControl, Card, Carousel } from 'react-bootstrap';
 import { motion } from 'framer-motion';
+import {useNavigate} from "react-router-dom";
 
 const HeroSection: React.FC = () => {
     return (
@@ -84,6 +85,17 @@ const Footer: React.FC = () => (
 );
 
 const LandingPage: React.FC = () => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        const email = localStorage.getItem('email');
+        const name = localStorage.getItem('name');
+
+        if (email === null || name === null) {
+            // User data does not exist, redirect to the auth page
+            navigate('/auth');
+        }
+    }, [navigate]);
+
     return (
         <div>
             <HeroSection />

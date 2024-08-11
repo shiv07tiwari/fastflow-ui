@@ -8,27 +8,16 @@ import {
     RouterProvider
 } from "react-router-dom"
 import LandingPage from "./pages/landing";
-// Import css file from ./App.css
-import {Button, NextUIProvider} from "@nextui-org/react";
-import { GoogleOAuthProvider, useGoogleLogin} from "@react-oauth/google";
-
-function GoogleLoginButton() {
-
-    const login = useGoogleLogin({
-        onSuccess: tokenResponse => console.log(tokenResponse),
-        scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/drive',
-        flow: 'auth-code',
-    });
-
-    return (<Button onClick={() => login()}>Sign in with Google 🚀</Button>);
-}
-
+import {NextUIProvider} from "@nextui-org/react";
+import { GoogleOAuthProvider} from "@react-oauth/google";
+import Login from "./pages/login";
+import Dashboard from "./pages/dashboard";
 
 function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <LandingPage/>,
+            element: <Dashboard/>,
         },
         {
             path: "/workflow/:id",
@@ -40,7 +29,7 @@ function App() {
         },
         {
             path:"/auth",
-            element: <GoogleLoginButton />
+            element: <Login />
         }
     ]);
     return (

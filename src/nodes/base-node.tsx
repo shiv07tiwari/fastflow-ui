@@ -54,6 +54,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
     const renderInput = (input: InputProps) => {
         const {key, inputType, inputLabel, enabled} = input;
+        console.log("Input Type: ", inputType)
         const height = inputType === "prompt" ? "240px" : "60px";
         const {available_inputs} = node;
         if (inputType === 'file') {

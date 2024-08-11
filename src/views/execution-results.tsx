@@ -52,17 +52,14 @@ export const ResultsTable: React.FC<Props> = ({value}) => {
     }
 
     const tableHeaders = Object.keys(value[0]);
-    // Add all table headers to the columns array
     const columns = tableHeaders.map((header) => ({key: header, label: underscoreToReadable(header)}));
     const data = value.map((row, index) => {
-        // Create a new object with each value converted to a string
         const stringifiedRow = Object.keys(row).reduce((newRow, key) => {
             // @ts-ignore
             newRow[key] = String(row[key]); // Convert each property to a string
             return newRow;
         }, {});
 
-        // Return new object with the index as a string key, and spread the stringified row properties
         return {key: String(index), ...stringifiedRow};
     });
     const totalColumns = columns.length;
@@ -82,7 +79,9 @@ export const ResultsTable: React.FC<Props> = ({value}) => {
                             <TableCell>
                                 <div>
                                     <div style={{maxWidth: columnWidth}}>
-                                        {getKeyValue(item, columnKey)}
+                                        <Markdown>
+                                            {getKeyValue(item, columnKey)}
+                                        </Markdown>
                                     </div>
                                 </div>
 
@@ -131,7 +130,6 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
 
         ws.onmessage = (e) => {
             const message = JSON.parse(e.data) as WorkflowRun;
-            console.log("Received message: ", message);
             updateReceivedResults(message.nodes);
             if (message.status === "WAITING_FOR_APPROVAL") {
                 setStatus("WAITING_FOR_APPROVAL");
