@@ -10,7 +10,7 @@ import {
 import LandingPage from "./pages/landing";
 // Import css file from ./App.css
 import {Button, NextUIProvider} from "@nextui-org/react";
-import {GoogleLogin, GoogleOAuthProvider, useGoogleLogin} from "@react-oauth/google";
+import { GoogleOAuthProvider, useGoogleLogin} from "@react-oauth/google";
 
 function GoogleLoginButton() {
 

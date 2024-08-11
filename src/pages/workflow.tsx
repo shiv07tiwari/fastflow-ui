@@ -32,6 +32,8 @@ import GeminiImageNode from "../nodes/gemini_image";
 import GoogleSheetWriterNode from "../nodes/google/google-sheet-writer";
 import InvoiceProcessorNode from "../nodes/invoice_processor";
 import GmailDraftNode from "../nodes/google/email-draft";
+import GoogleSheetReaderNode from "../nodes/google/google-sheet-reader";
+import DataAnalysisNode from "../nodes/star/data_analysis";
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -52,7 +54,9 @@ const nodeTypes = {
     gemini_image: GeminiImageNode,
     google_sheet_writer: GoogleSheetWriterNode,
     invoice_processor: InvoiceProcessorNode,
-    email_draft: GmailDraftNode
+    email_draft: GmailDraftNode,
+    google_sheet_reader: GoogleSheetReaderNode,
+    data_analysis: DataAnalysisNode
 };
 
 interface HeaderButtonProps {

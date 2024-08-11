@@ -1,12 +1,12 @@
 import React from 'react';
-import {Form, Spinner} from "react-bootstrap";
+import {Spinner} from "react-bootstrap";
 import {useWorkflowStore} from "../store/workflow-store";
 import {BaseNodeInput, Node} from "../types";
 import NodeHandle from "./node-handle";
 import {UploadStatus} from "../hooks/useHandleFileUpload";
 import {underscoreToReadable} from "../utils";
 import {Input} from "antd";
-import {Card, CardBody, CardHeader} from '@nextui-org/react';
+import {Card, CardBody} from '@nextui-org/react';
 
 interface InputProps {
     key: string;
