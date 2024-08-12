@@ -245,6 +245,15 @@ const Workflow: React.FC = () => {
                 approverNode={approverNode}
             />
             <div className="d-flex flex-row h-100">
+                <Button
+                    style={{margin: '16px', marginLeft: '32px', zIndex: 10000, position: 'absolute'}}
+                    isIconOnly
+                    onClick={toggleMenu}
+                    color="primary"
+                    variant="flat"
+                >
+                    <MdAdd size={64}/>
+                </Button>
                 <div className="flex-grow-1">
                     {isMenuOpen && (
                         <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
@@ -258,15 +267,6 @@ const Workflow: React.FC = () => {
                         onConnect={onConnect}
                         fitView
                     >
-                        <Button
-                            style={{margin: '16px', marginLeft: '32px'}}
-                            isIconOnly
-                            onClick={toggleMenu}
-                            color="primary"
-                            variant="flat"
-                        >
-                            <MdAdd size={64}/>
-                        </Button>
                         <Controls/>
                         <MiniMap style={{marginBottom: '-32px'}}/>
                         <Background/>
