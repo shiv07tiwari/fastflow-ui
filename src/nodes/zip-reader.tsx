@@ -25,7 +25,6 @@ const ZipReaderNode: React.FC<FileReaderNodeProps> = ({ data }) => {
     // Handle the file directly in the input handler
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const file = e.target.files?.[0];
-        console.log(file)
         if (file) {
             uploadFile(file);
         }

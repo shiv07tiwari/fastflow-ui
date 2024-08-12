@@ -91,9 +91,7 @@ const DataAnalysisCard: React.FC<Props> = ({value}) => {
             {
                 analysisResponse.map((analysis: Record<string, any>) => {
                     const analysisKeys = Object.keys(analysis);
-                    console.log(analysisKeys, typeof analysisKeys);
                     const analysisValues = Object.values(analysis);
-                    console.log(analysisValues);
                     return (
                         analysisKeys.map((key: any) => {
                             if (key === "one_line_graph") {

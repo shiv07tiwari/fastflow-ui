@@ -74,7 +74,7 @@ export const ResultAccordion = ({runs}) => {
     };
 
     const renderNodeOutputs = (outputs: any) => {
-        return <ResultsTable value={outputs}/>
+        return <ResultsTable value={outputs} widthRatio={200}/>
     };
 
     return (
@@ -139,7 +139,7 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({workflow_id,  show, onHide }
     const fetchWorkflowRuns = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8000/workflow/${workflow_id}/runs`);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/workflow/${workflow_id}/runs`);
             setRuns(response.data);
         } catch (error) {
             console.error("Error fetching workflow runs:", error);

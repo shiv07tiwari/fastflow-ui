@@ -15,7 +15,7 @@ export const useExecuteWorkflow = (workflowId: string) => {
         setData(null);
         setIsError(null);
 
-        await axios.post(`http://localhost:8000/workflow/run`, {
+        await axios.post(`${process.env.REACT_APP_BACKEND_BASE_URL}/workflow/run`, {
                 id: workflowId,
                 nodes,
                 edges,
@@ -26,7 +26,6 @@ export const useExecuteWorkflow = (workflowId: string) => {
                 setIsLoading(false);
                 const runStatus = res.data["status"];
                 const approveNode = res.data["approve_node"];
-                console.log("Workflow executed successfully:", runStatus, " ", approveNode);
                 setLatestRunData({
                     id: runId,
                     status: runStatus,

@@ -8,6 +8,8 @@ interface WorkflowState {
     nodes: Node[];
     edges: any[];
     name?: string;
+    owner: string;
+    setOwner: (owner: string) => void
     latest_run_data: any;
     setLatestRunData: (latest_run_data: any) => void;
     variables: any[];
@@ -29,6 +31,10 @@ interface WorkflowState {
 export const useWorkflowStore = create(devtools<WorkflowState>((set, get) => ({    nodes: [],
     baseNodes: [],
     variables: [],
+    setOwner: (owner: string) => {
+        set({owner})
+    },
+    owner: '',
     latest_run_data: {},
     setLatestRunData: (latest_run_data: any) => {
         set({latest_run_data})

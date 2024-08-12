@@ -24,27 +24,14 @@ interface Props {
 const NavBar: React.FC<Props> = ({name, email, photoUrl}) => {
     const nameInitials = name.split(' ').map((n: string) => n[0]).join('');
 
-    const {updateWorkflow} = useCreateWorkflow(email);
-
-    const createNewWorkflowWithToast = useCallback(async () => {
-        updateWorkflow();
-    }, [updateWorkflow]);
-
     return (
-        <Navbar style={{marginTop: '8px', backgroundColor: '#fafbff'}}>
-            <NavbarBrand style={{marginLeft: '-128px'}}>
+        <Navbar style={{marginRight: '132px', backgroundColor: '#fafbff'}}>
+            <NavbarBrand style={{marginLeft: '-96px'}}>
                 <img src={`/assets/logo.png`} alt={`Logo Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
                 <h4 className="font-bold text-inherit p-0 mt-2" style={{marginLeft: '-14px'}}>astflow</h4>
             </NavbarBrand>
-            <NavbarContent className="gap-4" justify="center">
-                <NavbarItem>
-                    <Button color="primary" variant="bordered" onClick={createNewWorkflowWithToast}>
-                        Create New Workflow
-                    </Button>
-                </NavbarItem>
-            </NavbarContent>
-            <NavbarContent as="div" justify="end" style={{marginRight: '-128px'}}>
+            <NavbarContent style={{marginRight: '-96px'}} as="div" justify="end">
                 <Dropdown placement="bottom-end">
                     <DropdownTrigger>
                         <Avatar
@@ -86,6 +73,8 @@ const Dashboard: React.FC = () => {
 
     }, [navigate]);
 
+    const {updateWorkflow} = useCreateWorkflow(email || '');
+
     return (
         <div style={{backgroundColor: "#fafbff"}}>
             <NavBar name={name || ''} email={email || ''} photoUrl={photoUrl || ''}/>
@@ -97,31 +86,20 @@ const Dashboard: React.FC = () => {
                     <div className="mt-3">
                         <Tabs aria-label="Options" size="lg" variant="light">
                             <Tab key="templates" title="Workflow Templates">
-                                <Card>
-                                    <CardBody>
-                                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                                        aliquip
-                                        ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                                        velit
-                                        esse cillum dolore eu fugiat nulla pariatur.
-                                    </CardBody>
-                                </Card>
+                                <ListWorkflows email={undefined}/>
                             </Tab>
                             <Tab key="your-workflows" title="Your Workflows">
-                                <ListWorkflows/>
-                            </Tab>
-
-                            <Tab key="nodes" title="Nodes">
-                                <AvailableNodes onSelectNode={() => {
-
-                                }} onClose={() => {}} />
+                                <ListWorkflows email={email || undefined}/>
                             </Tab>
                         </Tabs>
                     </div>
 
                 </div>
                 <div>
-                    <Card style={{height: '200px'}}>
+                    <Button fullWidth color="primary" variant="bordered" onClick={updateWorkflow}>
+                        Create New Workflow
+                    </Button>
+                    <Card style={{height: '200px', marginTop: '32px'}}>
                         <CardHeader>
                             <h5>Need Help?</h5>
                         </CardHeader>

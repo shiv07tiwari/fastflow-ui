@@ -13,7 +13,7 @@ export const useCreateWorkflow = (userEmail: string) => {
         setIsLoading(true);
         setData(null);
         setIsError(null);
-        await axios.post(`http://localhost:8000/workflow`, {
+        await axios.post(`${process.env.REACT_APP_BACKEND_BASE_URL}/workflow`, {
                 owner: userEmail
             }).then((response) => {
                 const workflowId = response.data.workflow_id;

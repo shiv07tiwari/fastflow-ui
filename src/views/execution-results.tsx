@@ -43,9 +43,10 @@ interface ExecutionResultsProps {
 
 interface Props {
     value: Record<string, any>[]; // specify a more precise type according to your data structure
+    widthRatio: number;
 }
 
-export const ResultsTable: React.FC<Props> = ({value}) => {
+export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
     if (typeof value !== 'object' || value === null) {
         // Optionally handle non-object types or return null or some fallback UI.
         return null;
@@ -63,7 +64,7 @@ export const ResultsTable: React.FC<Props> = ({value}) => {
         return {key: String(index), ...stringifiedRow};
     });
     const totalColumns = columns.length;
-    const columnWidth = 800 / totalColumns;
+    const columnWidth = widthRatio / totalColumns;
 
     return (
         <Table fullWidth aria-label="Example table with dynamic content" removeWrapper>
@@ -125,7 +126,7 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
     };
 
     useEffect(() => {
-        const url = `ws://localhost:8000/result/${runId}`;
+        const url = `${process.env.REACT_APP_BACKEND_WEBSOCKET_URL}/result/${runId}`;
         const ws = new WebSocket(url);
 
         ws.onmessage = (e) => {
@@ -170,7 +171,7 @@ const ExecutionResults: React.FC<ExecutionResultsProps> = ({
         if (node_id === "data_analysis") {
             return <DataAnalysisCard value={response}/>
         }
-        return <ResultsTable value={response}/>
+        return <ResultsTable value={response}  widthRatio={800}/>
     };
 
     const onRetryClicked = (nodeId: string) => {

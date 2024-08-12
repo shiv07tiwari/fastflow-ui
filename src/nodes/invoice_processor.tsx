@@ -25,7 +25,6 @@ const InvoiceProcessorNode: React.FC<FileReaderNodeProps> = ({ data }) => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string, inputType?: string) => {
         if (inputType === "file") {
             const file = e.target.files?.[0];
-            console.log(file)
             if (file) {
                 uploadFile(file);
             }

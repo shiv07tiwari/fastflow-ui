@@ -12,8 +12,6 @@ interface FileReaderNodeProps {
 const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
     const {updateNodeAvailableInputs} = useWorkflowStore();
     const onComplete = (downloadURL: string, status: string) => {
-        console.log(downloadURL)
-        console.log(status)
         if (status === 'successful' && downloadURL) {
             updateNodeAvailableInputs(data.id, "input_resume", downloadURL);
         }

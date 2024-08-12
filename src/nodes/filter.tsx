@@ -9,8 +9,6 @@ const Filter: React.FC<NodeInput> = ({data}) => {
     const {updateNodeAvailableInputs} = useWorkflowStore();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
-        console.log(e.target.value)
-        console.log(key)
         updateNodeAvailableInputs(data.id, key, e.target.value);
     };
 

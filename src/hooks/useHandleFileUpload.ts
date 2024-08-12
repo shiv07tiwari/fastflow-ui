@@ -36,7 +36,6 @@ export function useFileUpload(options?: UseFileUploadOptions): UseFileUploadHook
             setStatus('successful');
 
             // If an onComplete callback is provided, and upload was successful
-            console.log("Options: ", options, " ", status);
             if (options?.onComplete) {
                 options.onComplete(downloadPath, 'successful');
             }

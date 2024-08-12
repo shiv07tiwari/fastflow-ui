@@ -27,7 +27,7 @@ import CombineTextNode from "../nodes/combine-text";
 import HumanApproval from "../nodes/human_approval";
 import {useUpdateWorkflow} from "../hooks/useUpdateWorkflow";
 import Filter from "../nodes/filter";
-import {Avatar, Button, NavbarBrand} from "@nextui-org/react";
+import {Avatar, Button, Chip, NavbarBrand} from "@nextui-org/react";
 import GeminiImageNode from "../nodes/gemini_image";
 import GoogleSheetWriterNode from "../nodes/google/google-sheet-writer";
 import InvoiceProcessorNode from "../nodes/invoice_processor";
@@ -96,7 +96,7 @@ const Header: React.FC<{
       }) => {
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
-    const {setName, name} = useWorkflowStore();
+    const {setName, name, owner} = useWorkflowStore();
     const handleEditClick = () => {
         setIsEditing(true);
     };
@@ -111,10 +111,12 @@ const Header: React.FC<{
     };
 
     return (
-        <header className="shadow-sm py-3 px-4" style={{backgroundColor: "#FFFFFF"}}>
+        <header className="shadow-sm py-3 pe-3" style={{backgroundColor: "#FFFFFF"}}>
             <div className="container-fluid">
                 <div className="d-flex justify-content-between align-items-center">
-                    <Button disableRipple disableAnimation variant='light' onClick={() => {navigate('/')}}>
+                    <Button disableRipple disableAnimation variant='light' onClick={() => {
+                        navigate('/')
+                    }}>
                         <div className="d-flex flex-row">
                             <img src={`/assets/logo.png`} alt={`Logo Icon`} className="mr-3"
                                  style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
@@ -135,10 +137,19 @@ const Header: React.FC<{
                                 autoFocus
                             />
                         ) : (
-                            <button onClick={isEditing ? handleSaveClick : handleEditClick}
-                                    className="btn btn-sm">
-                                <h5 className=" mb-2 me-2">{name}</h5>
-                            </button>
+
+                            <div className="d-flex flex-row justify-content-center align-items-center">
+                                <button onClick={isEditing ? handleSaveClick : handleEditClick}
+                                        className="btn btn-sm">
+                                    <h5 className=" mb-2 me-2">{name}</h5>
+                                </button>
+                                {
+                                    owner === 'admin' && (
+                                        <Chip color="warning" variant="dot">Template</Chip>
+                                    )
+                                }
+                            </div>
+
 
                         )}
                     </div>
@@ -233,34 +244,34 @@ const Workflow: React.FC = () => {
                 latestRunStatus={latestRunStatus}
                 approverNode={approverNode}
             />
-            <Button
-                style={{margin: '16px'}}
-                isIconOnly
-                onClick={toggleMenu}
-                color="primary"
-                variant="flat"
-            >
-                <MdAdd size={64}/>
-            </Button>
-
-
-            <div className="flex-grow-1">
-                {isMenuOpen && (
-                    <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
-                )}
-                <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    nodeTypes={nodeTypes}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    fitView
-                >
-                    <Controls/>
-                    <MiniMap/>
-                    <Background/>
-                </ReactFlow>
+            <div className="d-flex flex-row h-100">
+                <div className="flex-grow-1">
+                    {isMenuOpen && (
+                        <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
+                    )}
+                    <ReactFlow
+                        nodes={nodes}
+                        edges={edges}
+                        nodeTypes={nodeTypes}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        fitView
+                    >
+                        <Button
+                            style={{margin: '16px', marginLeft: '32px'}}
+                            isIconOnly
+                            onClick={toggleMenu}
+                            color="primary"
+                            variant="flat"
+                        >
+                            <MdAdd size={64}/>
+                        </Button>
+                        <Controls/>
+                        <MiniMap style={{marginBottom: '-32px'}}/>
+                        <Background/>
+                    </ReactFlow>
+                </div>
             </div>
             {isWorkflowRunOpen && (
                 <WorkflowRuns workflow_id={id || ''} show={isWorkflowRunOpen} onHide={toggleWorkflowRun}/>

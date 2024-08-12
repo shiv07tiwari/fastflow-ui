@@ -14,7 +14,7 @@ export const useUpdateWorkflow = (workflowId: string) => {
         setIsLoading(true);
         setData(null);
         setIsError(null);
-        await axios.put(`http://localhost:8000/workflow`, {
+        await axios.put(`${process.env.REACT_APP_BACKEND_BASE_URL}/workflow`, {
                 id: workflowId,
                 nodes,
                 edges,

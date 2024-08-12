@@ -19,7 +19,11 @@ interface Workflow {
     ai_description: string;
 }
 
-const ListWorkflows: React.FC = () => {
+interface ListProps {
+    email?: string;
+}
+
+const ListWorkflows: React.FC<ListProps> = ({email}) => {
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -28,8 +32,9 @@ const ListWorkflows: React.FC = () => {
 
     useEffect(() => {
         const fetchWorkflows = async () => {
+            const owner = email || 'admin';
             try {
-                const response = await axios.get('http://localhost:8000/workflows');
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/workflows/${owner}`);
                 setWorkflows(response.data);
                 setError('');
             } catch (err: any) {
@@ -40,7 +45,7 @@ const ListWorkflows: React.FC = () => {
         };
 
         fetchWorkflows();
-    }, []);
+    }, [email]);
 
     const filteredWorkflows = workflows.filter((workflow) => {
         return (workflow.name || 'No Name').toLowerCase().includes(search.toLowerCase());

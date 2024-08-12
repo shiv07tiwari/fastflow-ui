@@ -20,7 +20,7 @@ function GoogleLoginButton() {
     const onLoginSuccess = async (response: any) => {
         try {
             const apiResponse = await axios.post(
-                'http://localhost:8000/google-auth',
+                `${process.env.REACT_APP_BACKEND_BASE_URL}/google-auth`,
                 {
                     token: response.code,
                 }

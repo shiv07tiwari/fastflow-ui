@@ -20,7 +20,7 @@ const AvailableNodes: React.FC<AvailableNodesProps> = ({onSelectNode, onClose}) 
     const fetchNodes = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await axios.get('http://localhost:8000/base-nodes');
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_BASE_URL}/base-nodes`);
             setNodes(response.data);
             setFilteredNodes(response.data);
         } catch (error) {
