@@ -118,9 +118,8 @@ const Header: React.FC<{
                         navigate('/')
                     }}>
                         <div className="d-flex flex-row">
-                            <img src={`/assets/logo.png`} alt={`Logo Icon`} className="mr-3"
+                            <img src={`/assets/home.png`} alt={`Logo Icon`} className="mr-3"
                                  style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
-                            <h4 className="font-bold text-inherit p-0 mt-2" style={{marginLeft: '-14px'}}>astflow</h4>
                         </div>
                     </Button>
 
@@ -245,14 +244,15 @@ const Workflow: React.FC = () => {
             />
             <div className="d-flex flex-row h-100">
                 <Button
-                    style={{margin: '16px', marginLeft: '32px', zIndex: 10000, position: 'absolute'}}
-                    isIconOnly
-                    onClick={toggleMenu}
-                    color="primary"
-                    variant="flat"
-                >
-                    <MdAdd size={64}/>
-                </Button>
+                        style={{margin: '16px', marginLeft: '32px', zIndex: 10000, position: 'relative'}}
+                        isIconOnly
+                        onClick={toggleMenu}
+                        color="primary"
+                        variant="flat"
+                    >
+                        <MdAdd size={32}/>
+                    </Button>
+
                 <div className="flex-grow-1">
                     {isMenuOpen && (
                         <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
@@ -266,8 +266,8 @@ const Workflow: React.FC = () => {
                         onConnect={onConnect}
                         defaultViewport={{x: 800, y: 300, zoom: 0.1}}
                     >
-                        <Controls/>
-                        <MiniMap style={{marginBottom: '-32px'}}/>
+                        <Controls position='top-right'/>
+                        <MiniMap style={{marginLeft: '-32px'}}/>
                         <Background/>
                     </ReactFlow>
                 </div>
