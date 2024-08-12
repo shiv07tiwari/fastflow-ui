@@ -13,7 +13,7 @@ import {
     TableCell,
     getKeyValue,
     Spinner,
-    Button,
+    Button, Divider,
 } from "@nextui-org/react";
 import Markdown from "react-markdown";
 import DataAnalysisCard from "./components/data_analysis_card";
@@ -57,7 +57,7 @@ export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
     const data = value.map((row, index) => {
         const stringifiedRow = Object.keys(row).reduce((newRow, key) => {
             // @ts-ignore
-            newRow[key] = String(row[key]); // Convert each property to a string
+            newRow[key] = String(row[key] || 'Not Available'); // Convert each property to a string
             return newRow;
         }, {});
 
@@ -67,15 +67,40 @@ export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
     const columnWidth = widthRatio / totalColumns;
 
     return (
+        <div>
+            {
+                data.map((item) => (
+                    <div>
+                        {
+                            columns.map((column) => (
+                                <div>
+                                    <div>
+                                        <h4>{column.label}</h4>
+                                        <Divider/>
+                                        <Markdown>
+                                            {getKeyValue(item, column.key) || 'Not Available'}
+                                        </Markdown>
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                ))
+            }
+        </div>
+    )
+
+    return (
         <Table fullWidth aria-label="Example table with dynamic content" removeWrapper>
             <TableHeader columns={columns}>
                 {(column) => (
                     <TableColumn key={column.key}>{column.label}</TableColumn>
                 )}
             </TableHeader>
-            <TableBody items={data}>
-                {(item) => (
-                    <TableRow key={item.key}>
+            <div>
+                {
+                data.map((item) => (
+                     <TableRow key={item.key}>
                         {(columnKey) => (
                             <TableCell>
                                 <div>
@@ -89,8 +114,27 @@ export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
                             </TableCell>
                         )}
                     </TableRow>
-                )}
-            </TableBody>
+                ))
+            }
+            </div>
+            {/*<TableBody items={data}>*/}
+            {/*    {(item) => (*/}
+            {/*        <TableRow key={item.key}>*/}
+            {/*            {(columnKey) => (*/}
+            {/*                <TableCell>*/}
+            {/*                    <div>*/}
+            {/*                        <div style={{maxWidth: columnWidth}}>*/}
+            {/*                            <Markdown>*/}
+            {/*                                {getKeyValue(item, columnKey)}*/}
+            {/*                            </Markdown>*/}
+            {/*                        </div>*/}
+            {/*                    </div>*/}
+
+            {/*                </TableCell>*/}
+            {/*            )}*/}
+            {/*        </TableRow>*/}
+            {/*    )}*/}
+            {/*</TableBody>*/}
         </Table>
     );
 };
