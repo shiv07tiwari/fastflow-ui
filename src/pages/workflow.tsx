@@ -92,11 +92,7 @@ const Header: React.FC<{
           onExecuteApproverWorkflow,
           onExecuteWorkflow,
           onToggleWorkflowRun,
-          onZoomIn,
-          onZoomOut,
           onSave,
-          latestRunStatus,
-          approverNode
       }) => {
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
@@ -234,7 +230,6 @@ const Workflow: React.FC = () => {
     }, [handleKeyDown]);
 
 
-    // @ts-ignore
     return (
         <div className="workflow-container d-flex flex-column vh-100">
             <Header
@@ -269,7 +264,7 @@ const Workflow: React.FC = () => {
                         onNodesChange={onNodesChange}
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
-                        fitView
+                        defaultViewport={{x: 800, y: 300, zoom: 0.1}}
                     >
                         <Controls/>
                         <MiniMap style={{marginBottom: '-32px'}}/>

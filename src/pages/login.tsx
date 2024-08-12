@@ -3,19 +3,11 @@ import {useGoogleLogin} from "@react-oauth/google";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {
-    Tabs,
-    Tab,
-    Input,
-    Link,
     Button,
     Card,
     CardBody,
     CardHeader,
-    Navbar,
-    NavbarBrand,
-    NavbarContent, Dropdown, DropdownTrigger, Avatar, DropdownMenu, DropdownItem, CardFooter
 } from "@nextui-org/react";
-import {MdAdd} from "react-icons/md";
 
 function GoogleLoginButton() {
     const navigate = useNavigate();
@@ -30,7 +22,10 @@ function GoogleLoginButton() {
         }
     }, [navigate]);
 
+    const [isSigningIn, setIsSigningIn] = React.useState(false);
+
     const onLoginSuccess = async (response: any) => {
+        setIsSigningIn(true);
         try {
             const apiResponse = await axios.post(
                 `${process.env.REACT_APP_BACKEND_BASE_URL}/google-auth`,
@@ -45,6 +40,7 @@ function GoogleLoginButton() {
 
             // Redirect to the home page
             navigate('/');
+            setIsSigningIn(false);
         } catch (error) {
             console.error("Login error:", error);
             // Handle error (e.g., show an error message to the user)
@@ -59,6 +55,7 @@ function GoogleLoginButton() {
 
     return (
         <Button
+                disabled={isSigningIn}
                 onClick={login}
                 variant='bordered'
                 className="w-full flex items-center justify-center"

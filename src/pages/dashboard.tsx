@@ -1,19 +1,14 @@
-import React, {useCallback, useEffect} from "react";
+import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {
     Dropdown,
-    Navbar,
-    NavbarBrand,
-    NavbarContent,
-    NavbarItem,
     DropdownTrigger,
     Avatar,
     DropdownMenu,
-    DropdownItem, Card, CardBody, CardHeader, Tabs, Tab, Button, Input
+    DropdownItem, Card, CardBody, CardHeader, Tabs, Tab, Button, Input, Chip
 } from "@nextui-org/react";
 import ListWorkflows from "../common/list-workflows";
 import {useCreateWorkflow} from "../hooks/useCreateWorkflow";
-import AvailableNodes from "../views/available-nodes";
 
 interface Props {
     name: string;
@@ -25,13 +20,16 @@ const NavBar: React.FC<Props> = ({name, email, photoUrl}) => {
     const nameInitials = name.split(' ').map((n: string) => n[0]).join('');
 
     return (
-        <Navbar style={{marginRight: '132px', backgroundColor: '#fafbff'}}>
-            <NavbarBrand style={{marginLeft: '-96px'}}>
+        <header
+            style={{backgroundColor: '#fafbff'}}
+            className="d-flex flex-row justify-content-between px-4 py-2"
+        >
+            <div className="d-flex flex-row">
                 <img src={`/assets/logo.png`} alt={`Logo Icon`} className="mr-3"
                      style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
                 <h4 className="font-bold text-inherit p-0 mt-2" style={{marginLeft: '-14px'}}>astflow</h4>
-            </NavbarBrand>
-            <NavbarContent style={{marginRight: '-96px'}} as="div" justify="end">
+            </div>
+            <div>
                 <Dropdown placement="bottom-end">
                     <DropdownTrigger>
                         <Avatar
@@ -47,8 +45,8 @@ const NavBar: React.FC<Props> = ({name, email, photoUrl}) => {
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
-            </NavbarContent>
-        </Navbar>
+            </div>
+        </header>
     );
 };
 
@@ -76,7 +74,7 @@ const Dashboard: React.FC = () => {
     const {updateWorkflow} = useCreateWorkflow(email || '');
 
     return (
-        <div style={{backgroundColor: "#fafbff"}}>
+        <div style={{backgroundColor: "#fafbff", minHeight: window.innerHeight}} >
             <NavBar name={name || ''} email={email || ''} photoUrl={photoUrl || ''}/>
             <div className="d-flex flex-row justify-content-between p-4">
                 <div style={{marginRight: '32px', width: '100%'}}>
