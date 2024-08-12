@@ -47,7 +47,7 @@ interface Props {
 }
 
 export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
-    if (typeof value !== 'object' || value === null) {
+    if (typeof value !== 'object' || value === null || value.length === 0) {
         // Optionally handle non-object types or return null or some fallback UI.
         return null;
     }
@@ -63,8 +63,6 @@ export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
 
         return {key: String(index), ...stringifiedRow};
     });
-    const totalColumns = columns.length;
-    const columnWidth = widthRatio / totalColumns;
 
     return (
         <div>
@@ -88,54 +86,6 @@ export const ResultsTable: React.FC<Props> = ({value, widthRatio}) => {
                 ))
             }
         </div>
-    )
-
-    return (
-        <Table fullWidth aria-label="Example table with dynamic content" removeWrapper>
-            <TableHeader columns={columns}>
-                {(column) => (
-                    <TableColumn key={column.key}>{column.label}</TableColumn>
-                )}
-            </TableHeader>
-            <div>
-                {
-                data.map((item) => (
-                     <TableRow key={item.key}>
-                        {(columnKey) => (
-                            <TableCell>
-                                <div>
-                                    <div style={{maxWidth: columnWidth}}>
-                                        <Markdown>
-                                            {getKeyValue(item, columnKey)}
-                                        </Markdown>
-                                    </div>
-                                </div>
-
-                            </TableCell>
-                        )}
-                    </TableRow>
-                ))
-            }
-            </div>
-            {/*<TableBody items={data}>*/}
-            {/*    {(item) => (*/}
-            {/*        <TableRow key={item.key}>*/}
-            {/*            {(columnKey) => (*/}
-            {/*                <TableCell>*/}
-            {/*                    <div>*/}
-            {/*                        <div style={{maxWidth: columnWidth}}>*/}
-            {/*                            <Markdown>*/}
-            {/*                                {getKeyValue(item, columnKey)}*/}
-            {/*                            </Markdown>*/}
-            {/*                        </div>*/}
-            {/*                    </div>*/}
-
-            {/*                </TableCell>*/}
-            {/*            )}*/}
-            {/*        </TableRow>*/}
-            {/*    )}*/}
-            {/*</TableBody>*/}
-        </Table>
     );
 };
 
