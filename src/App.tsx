@@ -8,16 +8,16 @@ import {
     RouterProvider
 } from "react-router-dom"
 import LandingPage from "./pages/landing";
-// Import css file from ./App.css
-import './App.css';
 import {NextUIProvider} from "@nextui-org/react";
-import {GoogleOAuthProvider} from "@react-oauth/google";
+import { GoogleOAuthProvider} from "@react-oauth/google";
+import Login from "./pages/login";
+import Dashboard from "./pages/dashboard";
 
 function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <LandingPage/>,
+            element: <Dashboard/>,
         },
         {
             path: "/workflow/:id",
@@ -26,6 +26,10 @@ function App() {
         {
             path: "/test",
             element: <></>,
+        },
+        {
+            path:"/auth",
+            element: <Login />
         }
     ]);
     return (

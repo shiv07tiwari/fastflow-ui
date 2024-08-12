@@ -3,7 +3,7 @@ import axios from "axios";
 import { useWorkflowStore } from "../store/workflow-store";
 
 export const useExecuteWorkflow = (workflowId: string) => {
-    const { nodes, edges } = useWorkflowStore();
+    const { nodes, edges, setLatestRunData } = useWorkflowStore();
 
     // States to track loading, data, and error
     const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +15,7 @@ export const useExecuteWorkflow = (workflowId: string) => {
         setData(null);
         setIsError(null);
 
-        await axios.post(`http://localhost:8000/workflow/run`, {
+        await axios.post(`${process.env.REACT_APP_BACKEND_BASE_URL}/workflow/run`, {
                 id: workflowId,
                 nodes,
                 edges,
@@ -24,6 +24,13 @@ export const useExecuteWorkflow = (workflowId: string) => {
             }).then((res) => {
                 setData(res.data);
                 setIsLoading(false);
+                const runStatus = res.data["status"];
+                const approveNode = res.data["approve_node"];
+                setLatestRunData({
+                    id: runId,
+                    status: runStatus,
+                    approve_node: approveNode,
+                });
             }).catch((error) => {
                 console.error("Failed to execute workflow:", error);
                 setIsError(error);

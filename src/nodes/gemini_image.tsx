@@ -1,19 +1,19 @@
 import React from 'react';
-import {BsFillFileEarmarkTextFill} from "react-icons/bs";
 import BaseNode from "./base-node";
-import {Node} from "../types";
-import {useWorkflowStore} from "../store/workflow-store";
+import { Node } from "../types";
+import { useWorkflowStore } from "../store/workflow-store";
 import {useFileUpload} from "../hooks/useHandleFileUpload";
 
 interface FileReaderNodeProps {
     data: Node;
 }
 
-const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
-    const {updateNodeAvailableInputs} = useWorkflowStore();
+const GeminiImageNode: React.FC<FileReaderNodeProps> = ({ data }) => {
+    const { updateNodeAvailableInputs } = useWorkflowStore();
+
     const onComplete = (downloadURL: string, status: string) => {
         if (status === 'successful' && downloadURL) {
-            updateNodeAvailableInputs(data.id, "input_resume", downloadURL);
+            updateNodeAvailableInputs(data.id, "file_path", downloadURL);
         }
     };
 
@@ -22,8 +22,8 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
     );
 
     // Handle the file directly in the input handler
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
-        if (key === "input_resume") {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string, inputType?: string) => {
+        if (inputType === "file") {
             const file = e.target.files?.[0];
             if (file) {
                 uploadFile(file);
@@ -31,16 +31,17 @@ const ResumeAnalysisNode: React.FC<FileReaderNodeProps> = ({data}) => {
         } else {
             updateNodeAvailableInputs(data.id, key, e.target.value);
         }
+
     };
 
     return (
         <BaseNode
             data={data}
-            title="Resume Analysis"
+            title="Gemini Image"
             handleInputChange={handleInputChange}
             status={status}
         />
     );
 };
 
-export default ResumeAnalysisNode;
+export default GeminiImageNode;

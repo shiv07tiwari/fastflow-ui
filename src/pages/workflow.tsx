@@ -5,7 +5,7 @@ import {useWorkflowData} from "../hooks/useWorkflowData";
 import {useExecuteWorkflow} from "../hooks/useExecuteWorkflow";
 import {useReactFlowHandlers} from "../hooks/useStoreHandlers";
 import {useWorkflowStore} from "../store/workflow-store";
-import {MdPlayArrow, MdReplay, MdAdd, MdCheck, MdEdit} from 'react-icons/md';
+import {MdPlayArrow, MdReplay, MdAdd} from 'react-icons/md';
 import toast, {Toaster} from 'react-hot-toast';
 import GeminiNode from "../nodes/gemini-node";
 import GeminiRAGNode from "../nodes/gemini-rag-node";
@@ -16,7 +16,7 @@ import FileReaderNode from "../nodes/file-reader";
 import Summarizer from "../nodes/summarizer";
 import ZipReaderNode from "../nodes/zip-reader";
 import ResumeAnalysisNode from "../nodes/resume-analysis";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import RedditNode from "../nodes/reddit-node";
 import WorkflowRuns from "../views/workflow-runs";
 import CompanyEnrichmentNode from "../nodes/company-enrichment";
@@ -29,7 +29,14 @@ import YoutubeComments from "../nodes/youtube-comments";
 import HumanApproval from "../nodes/human_approval";
 import {useUpdateWorkflow} from "../hooks/useUpdateWorkflow";
 import Filter from "../nodes/filter";
-import {Button, Input} from "@nextui-org/react";
+import {Avatar, Button, Chip, NavbarBrand} from "@nextui-org/react";
+import GeminiImageNode from "../nodes/gemini_image";
+import GoogleSheetWriterNode from "../nodes/google/google-sheet-writer";
+import InvoiceProcessorNode from "../nodes/invoice_processor";
+import GmailDraftNode from "../nodes/google/email-draft";
+import GoogleSheetReaderNode from "../nodes/google/google-sheet-reader";
+import DataAnalysisNode from "../nodes/star/data_analysis";
+import FloatButton from 'antd/es/float-button';
 
 const nodeTypes = {
     gemini: GeminiNode,
@@ -49,6 +56,12 @@ const nodeTypes = {
     gemini_rag: GeminiRAGNode,
     human_approval: HumanApproval,
     filter: Filter,
+    gemini_image: GeminiImageNode,
+    google_sheet_writer: GoogleSheetWriterNode,
+    invoice_processor: InvoiceProcessorNode,
+    email_draft: GmailDraftNode,
+    google_sheet_reader: GoogleSheetReaderNode,
+    data_analysis: DataAnalysisNode
 };
 
 interface HeaderButtonProps {
@@ -58,7 +71,7 @@ interface HeaderButtonProps {
 }
 
 const HeaderButton: React.FC<HeaderButtonProps> = ({onClick, icon, label}) => (
-    <Button onClick={onClick} color="primary" variant="flat">
+    <Button size="sm" onClick={onClick} color="primary" variant="flat">
         {icon}
         {label}
     </Button>
@@ -71,9 +84,23 @@ const Header: React.FC<{
     onZoomIn: () => void;
     onZoomOut: () => void;
     onSave: () => void;
-}> = ({onAddNode, onExecuteWorkflow, onToggleWorkflowRun, onZoomIn, onZoomOut, onSave}) => {
+    latestRunStatus?: string;
+    approverNode?: string;
+    onExecuteApproverWorkflow: (nodeId: string) => void;
+}> = ({
+          onAddNode,
+          onExecuteApproverWorkflow,
+          onExecuteWorkflow,
+          onToggleWorkflowRun,
+          onZoomIn,
+          onZoomOut,
+          onSave,
+          latestRunStatus,
+          approverNode
+      }) => {
+    const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
-    const {setName, name} = useWorkflowStore();
+    const {setName, name, owner} = useWorkflowStore();
     const handleEditClick = () => {
         setIsEditing(true);
     };
@@ -88,11 +115,20 @@ const Header: React.FC<{
     };
 
     return (
-        <header className="shadow-sm py-3 px-4" style={{backgroundColor: "#FFFFFF"}}>
+        <header className="shadow-sm py-3 pe-3" style={{backgroundColor: "#FFFFFF"}}>
             <div className="container-fluid">
                 <div className="d-flex justify-content-between align-items-center">
-                    <HeaderButton onClick={onAddNode} icon={<MdAdd size={20}/>} label="Add Node"/>
-                    <div className="d-flex align-items-center">
+                    <Button disableRipple disableAnimation variant='light' onClick={() => {
+                        navigate('/')
+                    }}>
+                        <div className="d-flex flex-row">
+                            <img src={`/assets/logo.png`} alt={`Logo Icon`} className="mr-3"
+                                 style={{width: "32px", height: "32px", "marginRight": '8px'}}/>
+                            <h4 className="font-bold text-inherit p-0 mt-2" style={{marginLeft: '-14px'}}>astflow</h4>
+                        </div>
+                    </Button>
+
+                    <div className="d-flex flex-col align-items-center">
                         {isEditing ? (
                             <input
                                 onClick={handleEditClick}
@@ -100,15 +136,24 @@ const Header: React.FC<{
                                 onBlur={handleSaveClick}
                                 value={name}
                                 onChange={handleInputChange}
-                                className="form-control h4 mb-0 me-2"
+                                className="form-control h4 mb-2 me-2"
                                 style={{width: '150px'}}
                                 autoFocus
                             />
                         ) : (
-                            <button onClick={isEditing ? handleSaveClick : handleEditClick}
-                                    className="btn btn-sm">
-                                <h5 className=" mb-0 me-2">{name}</h5>
-                            </button>
+
+                            <div className="d-flex flex-row justify-content-center align-items-center">
+                                <button onClick={isEditing ? handleSaveClick : handleEditClick}
+                                        className="btn btn-sm">
+                                    <h5 className=" mb-2 me-2">{name}</h5>
+                                </button>
+                                {
+                                    owner === 'admin' && (
+                                        <Chip color="warning" variant="dot">Template</Chip>
+                                    )
+                                }
+                            </div>
+
 
                         )}
                     </div>
@@ -195,28 +240,42 @@ const Workflow: React.FC = () => {
             <Header
                 onAddNode={toggleMenu}
                 onExecuteWorkflow={triggerWorkflow}
+                onExecuteApproverWorkflow={triggerRunFromResultsPage}
                 onToggleWorkflowRun={toggleWorkflowRun}
                 onZoomIn={handleZoomIn}
                 onZoomOut={handleZoomOut}
                 onSave={() => updateWorkflow()}
+                latestRunStatus={latestRunStatus}
+                approverNode={approverNode}
             />
-            <div className="flex-grow-1">
-                {isMenuOpen && (
-                    <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
-                )}
-                <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    nodeTypes={nodeTypes}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    fitView
+            <div className="d-flex flex-row h-100">
+                <Button
+                    style={{margin: '16px', marginLeft: '32px', zIndex: 10000, position: 'absolute'}}
+                    isIconOnly
+                    onClick={toggleMenu}
+                    color="primary"
+                    variant="flat"
                 >
-                    <Controls/>
-                    <MiniMap/>
-                    <Background/>
-                </ReactFlow>
+                    <MdAdd size={64}/>
+                </Button>
+                <div className="flex-grow-1">
+                    {isMenuOpen && (
+                        <AvailableNodes onClose={toggleMenu} onSelectNode={onAddNode}/>
+                    )}
+                    <ReactFlow
+                        nodes={nodes}
+                        edges={edges}
+                        nodeTypes={nodeTypes}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        fitView
+                    >
+                        <Controls/>
+                        <MiniMap style={{marginBottom: '-32px'}}/>
+                        <Background/>
+                    </ReactFlow>
+                </div>
             </div>
             {isWorkflowRunOpen && (
                 <WorkflowRuns workflow_id={id || ''} show={isWorkflowRunOpen} onHide={toggleWorkflowRun}/>

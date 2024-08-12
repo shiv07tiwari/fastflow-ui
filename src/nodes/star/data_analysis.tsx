@@ -1,10 +1,10 @@
 import React from 'react';
-import BaseNode from "./base-node";
-import {NodeInput} from "../types";
-import {useWorkflowStore} from "../store/workflow-store";
+import BaseNode from "../base-node";
+import {NodeInput} from "../../types";
+import {useWorkflowStore} from "../../store/workflow-store";
 
 
-const Filter: React.FC<NodeInput> = ({data}) => {
+const DataAnalysisNode: React.FC<NodeInput> = ({data}) => {
 
     const {updateNodeAvailableInputs} = useWorkflowStore();
 
@@ -15,10 +15,10 @@ const Filter: React.FC<NodeInput> = ({data}) => {
     return (
         <BaseNode
             data={data}
-            title="Filter"
+            title="Extractor"
             handleInputChange={handleInputChange}
         />
     );
 };
 
-export default Filter;
+export default DataAnalysisNode;

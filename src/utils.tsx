@@ -106,7 +106,6 @@ export const underscoreToReadable = (text: string) => {
 }
 
 export const timestampToHumanReadable = (timestamp: number) => {
-    console.log(timestamp, new Date(timestamp).toLocaleString());
     return new Date(timestamp).toLocaleString();
 };
 
